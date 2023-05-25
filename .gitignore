@@ -7,6 +7,9 @@
 *.zip
 *.tar.gz
 *.rar
+mvnw
+mvnw.cmd
+
 hs_err_pid*
 out/
 target/
@@ -28,6 +31,7 @@ target/
 *.iws
 *.iml
 *.ipr
+HELP.md
 
 ### NetBeans ###
 /nbproject/private/
