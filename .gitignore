@@ -9,7 +9,6 @@
 *.rar
 mvnw
 mvnw.cmd
-
 hs_err_pid*
 out/
 target/
