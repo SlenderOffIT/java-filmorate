@@ -21,9 +21,10 @@ class UserControllerTest {
     void createUsers() {
         userController = new UserController();
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
-        user1 = new User("qwert@mail.ru", "Grinch" ,LocalDate.of(2000, 12, 22));
+        user1 = new User("qwert@mail.ru", "Grinch", LocalDate.of(2000, 12, 22));
         user2 = new User("rgrgg.yandex.ru", "Blabl", "Сидр", LocalDate.of(2005, 1, 1));
     }
+
     @Test
     void getUsers() {
         userController.postUser(user);
