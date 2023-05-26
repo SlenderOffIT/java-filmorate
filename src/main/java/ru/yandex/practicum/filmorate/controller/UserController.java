@@ -8,7 +8,7 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
 
-import static ru.yandex.practicum.filmorate.util.ValidationUser.validation;
+import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 
 @Slf4j
@@ -21,13 +21,13 @@ public class UserController {
     private final Map<Integer, User> storageUsers = new HashMap<>();
 
     @GetMapping
-    public List<User> getUsers() { // смотрим список всех пользователей
-        log.info("Вывели список пользователей");
+    public List<User> getUsers() {
+        log.info("Поступил запрос на просмотр списка всех пользователей");
         return new ArrayList<>(storageUsers.values());
     }
 
     @PostMapping
-    public User postUser(@RequestBody User user) { // создаем пользователя
+    public User postUser(@RequestBody User user) {
         for (User userEmail: storageUsers.values()) {
             if (userEmail.getEmail().equals(user.getEmail())) {
                 throw new ValidationException("Пользователь с таким email " + user.getEmail() + "уже существует.");
@@ -44,7 +44,7 @@ public class UserController {
     }
 
     @PutMapping
-    public User changeUser(@RequestBody User user) { // изменяем пользователя
+    public User changeUser(@RequestBody User user) {
         if (storageUsers.containsKey(user.getId())) {
             validation(user);
             storageUsers.put(user.getId(), user);

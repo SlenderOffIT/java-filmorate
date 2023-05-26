@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import static ru.yandex.practicum.filmorate.util.ValidationFilm.*;
+import static ru.yandex.practicum.filmorate.util.Validations.*;
 
 @Slf4j
 @RestController
@@ -23,7 +23,7 @@ public class FilmController {
 
     @GetMapping
     public Collection<Film> getFilms() {
-        log.info("Просмотрены все фильмы");
+        log.info("Поступил запрос на просмотр всех имеющихся фильмов.");
         return storageFilm.values();
     }
 
