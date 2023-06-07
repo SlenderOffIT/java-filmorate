@@ -10,6 +10,7 @@ import java.time.LocalDate;
 
 @Slf4j
 public class Validations {
+
     public static void validation(@RequestBody Film film) {
         final LocalDate realiseFilm = LocalDate.from(film.getReleaseDate());
         final LocalDate birthFilm = LocalDate.of(1895, 12, 28);
