@@ -3,6 +3,9 @@ package ru.yandex.practicum.filmorate.controller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.Collection;
@@ -12,12 +15,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FilmControllerTest {
 
     FilmController filmController;
+    InMemoryUserStorage inMemoryUserStorage;
+    InMemoryFilmStorage inMemoryFilmStorage;
+    FilmService filmService;
     Film film;
     Film film1;
 
     @BeforeEach
     void create() {
-        filmController = new FilmController();
+        inMemoryFilmStorage = new InMemoryFilmStorage();
+        inMemoryUserStorage = new InMemoryUserStorage();
+        filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
+        filmController = new FilmController(filmService);
+
         film = new Film("Касандра", "описание",
                 LocalDate.of(2021, 4, 21), 123);
         film1 = new Film("Боевик", "Описание",
@@ -38,9 +48,8 @@ class FilmControllerTest {
         filmController.postFilm(film);
         filmController.postFilm(film1);
 
-        assertEquals(film, filmController.getStorageFilm().get(1));
-        assertEquals(film1, filmController.getStorageFilm().get(2));
-
+        assertEquals(film, inMemoryFilmStorage.getStorageFilm().get(1));
+        assertEquals(film1, inMemoryFilmStorage.getStorageFilm().get(2));
     }
 
     @Test
@@ -53,7 +62,6 @@ class FilmControllerTest {
         filmController.putFilm(film2);
 
         assertEquals(2, film2.getId());
-        assertEquals(2, filmController.getStorageFilm().size());
+        assertEquals(2, inMemoryFilmStorage.getStorageFilm().size());
     }
-
 }
