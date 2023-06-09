@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,28 +15,21 @@ import java.util.List;
  * /films/popular - для просмотра топа фильмов, defaultValue = 10;
  * /films/{id}/like/{userId} - для добавления и удаления лайков фильму.
  */
-@Slf4j
 @RestController
 @RequestMapping("/films")
+@AllArgsConstructor
 public class FilmController {
 
-    InMemoryFilmStorage inMemoryFilmStorage;
     FilmService filmService;
-
-    @Autowired
-    public FilmController(InMemoryFilmStorage inMemoryFilmStorage, FilmService filmService) {
-        this.inMemoryFilmStorage = inMemoryFilmStorage;
-        this.filmService = filmService;
-    }
 
     @GetMapping
     public Collection<Film> getFilms() {
-        return inMemoryFilmStorage.getFilms();
+        return filmService.getFilms();
     }
 
     @GetMapping("/{id}")
-    public Film watchFilmById(@PathVariable int id) {
-        return inMemoryFilmStorage.watchFilmById(id);
+    public Film findFilmById(@PathVariable int id) {
+        return filmService.findFilmById(id);
     }
 
     @GetMapping("/popular")
@@ -48,12 +39,12 @@ public class FilmController {
 
     @PostMapping
     public Film postFilm(@RequestBody Film film) {
-        return inMemoryFilmStorage.postFilm(film);
+        return filmService.postFilm(film);
     }
 
     @PutMapping
     public Film putFilm(@RequestBody Film film) {
-        return inMemoryFilmStorage.putFilm(film);
+        return filmService.update(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
@@ -63,7 +54,7 @@ public class FilmController {
 
     @DeleteMapping("/{id}")
     public void deleteFilm(@PathVariable int id) {
-        inMemoryFilmStorage.deleteFilm(id);
+        filmService.delete(id);
     }
 
     @DeleteMapping("/{id}/like/{userId}")

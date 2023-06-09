@@ -3,15 +3,11 @@ package ru.yandex.practicum.filmorate.storage;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-
-import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
  * Данный класс InMemoryFilmStorage предназначен для хранения, добавления, обновления, удаления
@@ -30,40 +26,32 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Integer, Film> storageFilm = new HashMap<>();
 
     public Collection<Film> getFilms() {
-        log.info("Поступил запрос на просмотр всех имеющихся фильмов.");
         return storageFilm.values();
     }
 
-    public Film watchFilmById(int id) {
-        if (!storageFilm.containsKey(id)) {
-            log.debug("Поступил запрос на просмотр не существующего фильма с id {}", id);
-            throw new FilmNotFoundException(String.format("Фильма с id %d в нашей базе нету", id));
-        }
-        log.info("Поступил запрос на просмотр данных фильма с id {}", id);
+    public Film findFilmById(int id) {
         return storageFilm.get(id);
     }
 
     public Film postFilm(Film film) {
-        validation(film);
         film.setId(id++);
         storageFilm.put(film.getId(), film);
-        log.info("Добавили фильм {}", film.getName());
+        log.debug("Добавили фильм с id {}", film.getId());
         return film;
     }
 
-    public Film putFilm(Film film) {
-        if (storageFilm.containsKey(film.getId())) {
-            validation(film);
-            storageFilm.put(film.getId(), film);
-            log.info("Изменили данные о фильме {}", film.getName());
-        } else {
-            throw new ValidationException("Фильма с таким id " + film.getId() + " не существует.");
-        }
+    public Film update(Film film) {
+        storageFilm.put(film.getId(), film);
+        log.debug("Изменили данные о фильме {}", film.getName());
         return film;
     }
 
-    public void deleteFilm(int id) {
-        log.info("Поступил запрос на удаление фильма с id {}", id);
+    public void delete(int id) {
         storageFilm.remove(id);
+        log.debug("Фильм с id {} удален", id);
+    }
+
+    public boolean isExist(int id) {
+        return getStorageFilm().containsKey(id);
     }
 }

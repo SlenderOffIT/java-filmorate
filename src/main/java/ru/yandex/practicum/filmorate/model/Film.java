@@ -17,6 +17,7 @@ public class Film {
     private LocalDate releaseDate;
     private int duration;
     private Set<Integer> filmLikes = new TreeSet<>();
+    private int rating;
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
@@ -36,6 +37,14 @@ public class Film {
         return filmLikes;
     }
 
+    public void incrementRating() {
+        rating++;
+    }
+
+    public void decrementRating() {
+        rating--;
+    }
+
     @Override
     public String toString() {
         return "Film{" +
@@ -44,7 +53,8 @@ public class Film {
                 ", description='" + description + '\'' +
                 ", releaseDate=" + releaseDate +
                 ", duration=" + duration +
-                ", filmLikes=" + filmLikes.size() +
+                ", filmLikes=" + filmLikes +
+                ", rating=" + rating +
                 '}';
     }
 }

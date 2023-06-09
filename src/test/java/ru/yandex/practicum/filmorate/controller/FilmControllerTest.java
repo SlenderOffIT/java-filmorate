@@ -15,8 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class FilmControllerTest {
 
     FilmController filmController;
-    InMemoryFilmStorage inMemoryFilmStorage;
     InMemoryUserStorage inMemoryUserStorage;
+    InMemoryFilmStorage inMemoryFilmStorage;
     FilmService filmService;
     Film film;
     Film film1;
@@ -26,7 +26,7 @@ class FilmControllerTest {
         inMemoryFilmStorage = new InMemoryFilmStorage();
         inMemoryUserStorage = new InMemoryUserStorage();
         filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
-        filmController = new FilmController(inMemoryFilmStorage, filmService);
+        filmController = new FilmController(filmService);
 
         film = new Film("Касандра", "описание",
                 LocalDate.of(2021, 4, 21), 123);
@@ -50,7 +50,6 @@ class FilmControllerTest {
 
         assertEquals(film, inMemoryFilmStorage.getStorageFilm().get(1));
         assertEquals(film1, inMemoryFilmStorage.getStorageFilm().get(2));
-
     }
 
     @Test

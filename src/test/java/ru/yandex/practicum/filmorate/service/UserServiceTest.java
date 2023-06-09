@@ -25,7 +25,7 @@ class UserServiceTest {
     void createUsers() {
         inMemoryUserStorage = new InMemoryUserStorage();
         userService = new UserService(inMemoryUserStorage);
-        userController = new UserController(inMemoryUserStorage, userService);
+        userController = new UserController(userService);
 
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
         user1 = new User("qwert@mail.ru", "Grinch", LocalDate.of(2000, 12, 22));

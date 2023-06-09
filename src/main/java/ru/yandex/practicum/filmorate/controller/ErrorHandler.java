@@ -13,8 +13,8 @@ import ru.yandex.practicum.filmorate.model.ErrorResponse;
  *  Благодаря данному классу мы увидим json с описанием ошибки.
  *  handlerValidationException - ошибка с полем;
  *  handleThrowable - ошибка на стороне сервера;
- *  handleUserNotFoundException - если фильм не найден;
- *  handlerFilmNotFoundException - если пользователь не найден.
+ *  handleUserNotFoundException - если пользователь не найден;
+ *  handlerFilmNotFoundException - если фильм не найден.
  */
 @RestControllerAdvice
 public class ErrorHandler {

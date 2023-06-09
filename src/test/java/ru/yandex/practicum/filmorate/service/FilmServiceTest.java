@@ -42,7 +42,7 @@ class FilmServiceTest {
         inMemoryFilmStorage = new InMemoryFilmStorage();
         inMemoryUserStorage = new InMemoryUserStorage();
         filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
-        filmController = new FilmController(inMemoryFilmStorage, filmService);
+        filmController = new FilmController(filmService);
 
         film = new Film("Касандра", "описание",
                 LocalDate.of(1992, 12, 1), 123);

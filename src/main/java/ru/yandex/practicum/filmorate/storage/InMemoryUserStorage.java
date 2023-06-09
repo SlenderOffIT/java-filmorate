@@ -1,18 +1,13 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
  * Данный класс InMemoryUserStorage предназначен для хранения, обновления и поиска пользователей нашего сервиса.
@@ -29,44 +24,44 @@ public class InMemoryUserStorage implements UserStorage {
     private int idUsers = 1;
     @Getter
     private final Map<Integer, User> storageUsers = new HashMap<>();
+    @Getter
+    @Setter
+    private Set<String> userEmail = new HashSet<>();
 
     public List<User> getUsers() {
-        log.info("Поступил запрос на просмотр списка всех пользователей");
         return new ArrayList<>(storageUsers.values());
     }
 
     public User getUserId(int id) {
-        if (!storageUsers.containsKey(id) || id <= 0) {
-            throw new UserNotFoundException(String.format("Не корректный id %d пользователя", id));
-        }
         return storageUsers.get(id);
     }
 
     public User postUser(User user) {
-        for (User userEmail: storageUsers.values()) {
-            if (userEmail.getEmail().equals(user.getEmail())) {
-                log.debug("Попытка создать пользователя по уже существующему email {}", user.getEmail());
-                throw new ValidationException(String.format("Пользователь с таким email %s уже существует.", user.getEmail()));
-            }
-        }
-        validation(user);
         user.setId(idUsers++);
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
         storageUsers.put(user.getId(), user);
-        log.info("Пользователь {} добавлен.", user.getLogin());
+        userEmail.add(user.getEmail());
+        log.debug("Пользователь {} добавлен.", user.getLogin());
         return user;
     }
 
-    public User changeUser(User user) {
-        if (storageUsers.containsKey(user.getId())) {
-            validation(user);
-            storageUsers.put(user.getId(), user);
-            log.info("Пользователь {} изменен", user.getLogin());
-        } else {
-            throw new UserNotFoundException(String.format("Пользователь с id %d не найден", user.getId()));
-        }
+    public User update(User user) {
+        storageUsers.put(user.getId(), user);
+        log.debug("Пользователь {} изменен", user.getLogin());
         return user;
+    }
+
+    public void deleteFriends(int id, int friendId) {
+        User user = getStorageUsers().get(id);
+        User friend = getStorageUsers().get(friendId);
+        user.getListFriends().remove(friendId);
+        friend.getListFriends().remove(id);
+        log.info("Пользователь с id {} удалил из друзей пользователя с id {}.", id, friendId);
+    }
+
+    public boolean isExist(int id) {
+        return getStorageUsers().containsKey(id);
     }
 }
