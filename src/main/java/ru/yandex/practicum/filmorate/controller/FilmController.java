@@ -1,50 +1,64 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
-import static ru.yandex.practicum.filmorate.util.Validations.*;
-
-@Slf4j
+/**
+ * Данный контроллер содержит в себе эндпоинты взаимодействия с фильмами:
+ * /films - для просмотра, добавления и редактирования фильма;
+ * /films/{id} - для просмотра и удаления фильма;
+ * /films/popular - для просмотра топа фильмов, defaultValue = 10;
+ * /films/{id}/like/{userId} - для добавления и удаления лайков фильму.
+ */
 @RestController
 @RequestMapping("/films")
+@AllArgsConstructor
 public class FilmController {
 
-    private int id = 1;
-    @Getter
-    private final Map<Integer, Film> storageFilm = new HashMap<>();
+    FilmService filmService;
 
     @GetMapping
     public Collection<Film> getFilms() {
-        log.info("Поступил запрос на просмотр всех имеющихся фильмов.");
-        return storageFilm.values();
+        return filmService.getFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film findFilmById(@PathVariable int id) {
+        return filmService.findFilmById(id);
+    }
+
+    @GetMapping("/popular")
+    public List<Film> topFilms(@RequestParam(required = false, defaultValue = "10") int count) {
+        return filmService.topFilms(count);
     }
 
     @PostMapping
     public Film postFilm(@RequestBody Film film) {
-        validation(film);
-        film.setId(id++);
-        storageFilm.put(film.getId(), film);
-        log.info("Добавили фильм " + film.getName());
-        return film;
+        return filmService.postFilm(film);
     }
 
     @PutMapping
     public Film putFilm(@RequestBody Film film) {
-        if (storageFilm.containsKey(film.getId())) {
-            validation(film);
-            storageFilm.put(film.getId(), film);
-            log.info("Изменили данные о фильме " + film.getName());
-        } else {
-            throw new ValidationException("Фильма с таким id " + film.getId() + " не существует.");
-        }
-        return film;
+        return filmService.update(film);
+    }
+
+    @PutMapping("/{id}/like/{userId}")
+    public Integer likeForFilm(@PathVariable int id, @PathVariable int userId) {
+        return filmService.likeForFilm(id, userId);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteFilm(@PathVariable int id) {
+        filmService.delete(id);
+    }
+
+    @DeleteMapping("/{id}/like/{userId}")
+    public Integer deleteLikeForFilm(@PathVariable int id, @PathVariable int userId) {
+        return filmService.deleteLikeForFilm(id, userId);
     }
 }

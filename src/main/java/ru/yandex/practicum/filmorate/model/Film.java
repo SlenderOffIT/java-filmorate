@@ -1,11 +1,14 @@
 package ru.yandex.practicum.filmorate.model;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.Set;
+import java.util.TreeSet;
 
-@Data
+@Getter
+@Setter
+@NoArgsConstructor
 @EqualsAndHashCode
 public class Film {
     private int id;
@@ -13,11 +16,45 @@ public class Film {
     private String description;
     private LocalDate releaseDate;
     private int duration;
+    private Set<Integer> filmLikes = new TreeSet<>();
+    private int rating;
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
         this.description = description;
         this.releaseDate = releaseDate;
         this.duration = duration;
+    }
+
+    public void setFilmLikes(Integer filmLikes) {
+        this.filmLikes.add(filmLikes);
+    }
+
+    public Set<Integer> getFilmLikes() {
+        if (filmLikes == null) {
+            return new TreeSet<>();
+        }
+        return filmLikes;
+    }
+
+    public void incrementRating() {
+        rating++;
+    }
+
+    public void decrementRating() {
+        rating--;
+    }
+
+    @Override
+    public String toString() {
+        return "Film{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", releaseDate=" + releaseDate +
+                ", duration=" + duration +
+                ", filmLikes=" + filmLikes +
+                ", rating=" + rating +
+                '}';
     }
 }

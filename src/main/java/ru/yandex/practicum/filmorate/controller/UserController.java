@@ -1,57 +1,63 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import lombok.Getter;
-import lombok.extern.slf4j.Slf4j;
+import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.*;
 
-import static ru.yandex.practicum.filmorate.util.Validations.validation;
-
-
-@Slf4j
+/**
+ * Данный контроллер содержит в себе эндпоинты взаимодействия с пользователями:
+ * /users - для добавления, изменения пользователя и просмотра всех пользователей;
+ * /users/id - для просмотра пользователя по его id;
+ * /users/id/friends - для просмотра списка друзей;
+ * /users/id/friends/common/otherId - для просмотра общих друзей с другим пользователем;
+ * /users/id/friends/friendId - для добавления и удаления друзей.
+ */
+@AllArgsConstructor
 @RestController
 @RequestMapping("/users")
 public class UserController {
-
-    private int idUsers = 1;
-    @Getter
-    private final Map<Integer, User> storageUsers = new HashMap<>();
+    UserService userService;
 
     @GetMapping
     public List<User> getUsers() {
-        log.info("Поступил запрос на просмотр списка всех пользователей");
-        return new ArrayList<>(storageUsers.values());
+        return userService.getUsers();
+    }
+
+    @GetMapping("/{id}")
+    public User getUserId(@PathVariable int id) {
+        return userService.getUserId(id);
+    }
+
+    @GetMapping("/{id}/friends")
+    public List<User> listFriends(@PathVariable int id) {
+        return userService.listFriends(id);
+    }
+
+    @GetMapping("/{id}/friends/common/{otherId}")
+    public List<User> listMutualFriends(@PathVariable int id, @PathVariable int otherId) {
+        return userService.listMutualFriends(id, otherId);
     }
 
     @PostMapping
     public User postUser(@RequestBody User user) {
-        for (User userEmail: storageUsers.values()) {
-            if (userEmail.getEmail().equals(user.getEmail())) {
-                throw new ValidationException("Пользователь с таким email " + user.getEmail() + "уже существует.");
-            }
-        }
-        validation(user);
-        user.setId(idUsers++);
-        if (user.getName() == null) {
-            user.setName(user.getLogin());
-        }
-        storageUsers.put(user.getId(), user);
-        log.info("Пользователь " + user.getLogin() + " добавлен.");
-        return user;
+        return userService.postUser(user);
     }
 
     @PutMapping
-    public User changeUser(@RequestBody User user) {
-        if (storageUsers.containsKey(user.getId())) {
-            validation(user);
-            storageUsers.put(user.getId(), user);
-            log.info("Пользователь " + user.getLogin() + " изменен");
-        } else {
-            throw new ValidationException("Пользователя с таким id " + user.getId() + " не существует");
-        }
-        return user;
+    public User putUser(@RequestBody User user) {
+        return userService.update(user);
+    }
+
+    @PutMapping("/{id}/friends/{friendId}")
+    public void addingFriends(@PathVariable int id, @PathVariable int friendId) {
+        userService.addingFriends(id, friendId);
+    }
+
+    @DeleteMapping("/{id}/friends/{friendId}")
+    public void deleteFriends(@PathVariable int id, @PathVariable int friendId) {
+        userService.deleteFriends(id, friendId);
     }
 }
