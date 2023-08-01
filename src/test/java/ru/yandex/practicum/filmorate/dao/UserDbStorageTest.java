@@ -29,7 +29,7 @@ class UserDbStorageTest {
     public void create() {
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
         user1 = new User("qwert@mail.ru", "Grinch", LocalDate.of(2000, 12, 22));
-        user2 = new User("mnbbvct@mail.ru", "Grinch", "Aria", LocalDate.of(1990, 4, 5));
+        user2 = new User("mnbsbvct@mail.ru", "Grinch", "Aria", LocalDate.of(1990, 4, 5));
     }
 
     @Test
