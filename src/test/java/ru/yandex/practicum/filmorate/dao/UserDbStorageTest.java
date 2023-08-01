@@ -8,8 +8,6 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.GenreService;
-import ru.yandex.practicum.filmorate.service.RatingMpaService;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -28,7 +26,7 @@ class UserDbStorageTest {
     private User user2;
 
     @BeforeEach
-    public void create () {
+    public void create() {
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
         user1 = new User("qwert@mail.ru", "Grinch", LocalDate.of(2000, 12, 22));
         user2 = new User("mnbbvct@mail.ru", "Grinch", "Aria", LocalDate.of(1990, 4, 5));

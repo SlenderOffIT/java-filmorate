@@ -29,8 +29,7 @@ class FilmDbStorageTest {
     @BeforeEach
     public void create() {
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
-        film = new Film("Касандра", "описание",
-                LocalDate.of(1992, 12, 1), 123, new RatingMpa(1));
+        film = new Film("Касандра", "описание", LocalDate.of(1992, 12, 1), 123, new RatingMpa(1));
     }
 
     @Test
