@@ -15,6 +15,7 @@ out/
 target/
 !**/src/main/**/target/
 !**/src/test/**/target/
+db
 
 ### STS ###
 .apt_generated

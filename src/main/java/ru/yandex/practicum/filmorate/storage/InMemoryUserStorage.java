@@ -32,6 +32,38 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(storageUsers.values());
     }
 
+    public Map<Integer, User> getStorageUsers() {
+        return storageUsers;
+    }
+
+    @Override
+    public List<User> listFriends(int id) {
+        User user = getStorageUsers().get(id);
+        List<User> friends = new ArrayList<>();
+        for (int friendId : user.getListFriends()) {
+            User friend = getStorageUsers().get(friendId);
+            friends.add(friend);
+        }
+        log.info("Поступил запрос на просмотр списка друзей от пользователя с id {}.", id);
+        return friends;
+    }
+
+    @Override
+    public List<User> listMutualFriends(int id, int otherId) {
+        User user = getStorageUsers().get(id);
+        User other = getStorageUsers().get(otherId);
+
+        List<Integer> mutualFriendsId = new ArrayList<>(user.getListFriends());
+        mutualFriendsId.retainAll(other.getListFriends());
+
+        List<User> mutualFriends = new ArrayList<>();
+        for (Integer friends: mutualFriendsId) {
+            User outputUser = getStorageUsers().get(friends);
+            mutualFriends.add(outputUser);
+        }
+        return mutualFriends;
+    }
+
     public User getUserId(int id) {
         return storageUsers.get(id);
     }
@@ -53,6 +85,12 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
+    @Override
+    public void delete(int id) {
+        getStorageUsers().remove(id);
+    }
+
+
     public void deleteFriends(int id, int friendId) {
         User user = getStorageUsers().get(id);
         User friend = getStorageUsers().get(friendId);
@@ -60,6 +98,16 @@ public class InMemoryUserStorage implements UserStorage {
         friend.getListFriends().remove(id);
         log.info("Пользователь с id {} удалил из друзей пользователя с id {}.", id, friendId);
     }
+
+    public void addingFriends(int id, int friendId) {
+        User user = getStorageUsers().get(id);
+        User friend = getStorageUsers().get(friendId);
+        user.setListFriends(friendId);
+        friend.setListFriends(id);
+        log.info("Пользователь с id {} добавил в друзья пользователя с id {}.", id, friendId);
+    }
+
+
 
     public boolean isExist(int id) {
         return getStorageUsers().containsKey(id);

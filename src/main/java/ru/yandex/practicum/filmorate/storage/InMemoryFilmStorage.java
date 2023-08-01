@@ -5,9 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Данный класс InMemoryFilmStorage предназначен для хранения, добавления, обновления, удаления
@@ -25,8 +23,8 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Getter
     private final Map<Integer, Film> storageFilm = new HashMap<>();
 
-    public Collection<Film> getFilms() {
-        return storageFilm.values();
+    public List<Film> getFilms() {
+        return new ArrayList<>(storageFilm.values());
     }
 
     public Film findFilmById(int id) {
@@ -51,7 +49,37 @@ public class InMemoryFilmStorage implements FilmStorage {
         log.debug("Фильм с id {} удален", id);
     }
 
+    @Override
+    public void likeForFilm(int id, int userId) {
+        Film film = getStorageFilm().get(id);
+        if (!isExistLike(id, userId)) {
+            film.getFilmLikes().add(userId);
+            film.incrementRating();
+            update(film);
+            log.debug("Пользователь с id {} поставил лайк фильму с id {}", userId, id);
+        }
+    }
+
+    @Override
+    public void deleteLikeForFilm(int id, int userId) {
+        Film film = getStorageFilm().get(id);
+        if (isExistLike(id, userId)) {
+            film.getFilmLikes().remove(userId);
+            film.decrementRating();
+            update(film);
+            log.debug("Пользователь с id {} удалил лайк с фильма с id {}", userId, id);
+        }
+    }
+
     public boolean isExist(int id) {
         return getStorageFilm().containsKey(id);
     }
+
+    @Override
+    public boolean isExistLike(int filmId, int userId) {
+        Film film = getStorageFilm().get(filmId);
+        return film.getFilmLikes().contains(userId);
+    }
+
+
 }

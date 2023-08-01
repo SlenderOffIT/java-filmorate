@@ -57,7 +57,7 @@ class UserControllerTest {
     }
 
     @Test
-    void changeUser() {
+    void putUser() {
         userController.postUser(user);
         userController.postUser(user1);
 
