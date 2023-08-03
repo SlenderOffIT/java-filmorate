@@ -6,8 +6,8 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -27,9 +27,7 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
 @Qualifier("filmDbStorage")
 public class FilmService {
 
-    @Qualifier("filmDbStorage")
     FilmStorage filmStorage;
-    @Qualifier("userDbStorage")
     UserStorage userStorage;
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage")UserStorage userStorage) {
@@ -54,7 +52,7 @@ public class FilmService {
     public Film postFilm(Film film) {
         log.debug("Поступил запрос на добавление фильма с id {}", film.getId());
         validation(film);
-        return filmStorage.postFilm(film);
+        return filmStorage.save(film);
     }
 
     public Film update(Film film) {
@@ -76,10 +74,6 @@ public class FilmService {
         filmStorage.delete(id);
     }
 
-    /**
-     * @param id НУЖНО СДЕЛАТЬ ПРОВЕРКУ НА ТО, ЧТО ЛАЙКА ОТ ТАКОГО ПОЛЬЗОВАТЕЛЯ НЕТУ, А ЕСЛИ ЕСТЬ, ТО НЕ ЧЕГО НЕ ДЕЛАТЬ
-     * @param userId ТО ЖЕ САМОЕ И В УДАЛЕНИИ
-     */
     public void likeForFilm(int id, int userId) {
         if (!userStorage.isExist(userId)) {
             log.debug("Поступил запрос на добавление лайка от несуществующего пользователя с id {}.", userId);
@@ -116,8 +110,8 @@ public class FilmService {
      * @param count  обозначает какой топ по количеству лайков нужно найти в списке фильмов,
      *              если данное значение не указано, то вернется список из первых 10 фильмов
      * @return вернет нужный список фильмов
-     * В методе так же сортируем (.sort) фильмы по количеству лайков и выводим в обратном порядке,
-     * от большего к меньшему и если переменная count заданна, то устанавливаем limit на данное значение
+     * В методе сортируем (.sort) фильмы по количеству лайков и выводим в обратном порядке,
+     * если переменная count заданна, то устанавливаем limit на данное значение
      * и собираем (collect) все элементы стрима в список.
      */
     public List<Film> topFilms(Integer count) {

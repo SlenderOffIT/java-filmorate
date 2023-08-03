@@ -1,9 +1,10 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.film;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import java.util.*;
 
@@ -31,7 +32,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return storageFilm.get(id);
     }
 
-    public Film postFilm(Film film) {
+    public Film save(Film film) {
         film.setId(id++);
         storageFilm.put(film.getId(), film);
         log.debug("Добавили фильм с id {}", film.getId());

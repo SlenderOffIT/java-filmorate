@@ -8,11 +8,10 @@ import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 /**
- *  Благодаря данному классу мы увидим json с описанием ошибки.
+ *  Обработчик ошибок контроллера.
  *  handlerValidationException - ошибка с полем;
  *  handleThrowable - ошибка на стороне сервера;
- *  handleUserNotFoundException - если пользователь не найден;
- *  handlerFilmNotFoundException - если фильм не найден.
+ *  handleNotFoundExceptions - если объект не найден.
  */
 @RestControllerAdvice
 public class ErrorHandler {
@@ -30,30 +29,9 @@ public class ErrorHandler {
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 
-    @ExceptionHandler
+    @ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class, MpaNotFoundException.class, GenreNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleUserNotFoundException(final UserNotFoundException e) {
-        e.printStackTrace();
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handlerFilmNotFoundException(final FilmNotFoundException e) {
-        e.printStackTrace();
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handlerMpaNotFoundException(final MpaNotFoundException e) {
-        e.printStackTrace();
-        return new ErrorResponse(e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleGenreNotFoundException(final GenreNotFoundException e) {
+    public ErrorResponse handleNotFoundExceptions(final Exception e) {
         e.printStackTrace();
         return new ErrorResponse(e.getMessage());
     }

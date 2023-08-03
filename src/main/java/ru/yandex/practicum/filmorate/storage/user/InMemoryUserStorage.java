@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -68,7 +68,7 @@ public class InMemoryUserStorage implements UserStorage {
         return storageUsers.get(id);
     }
 
-    public User postUser(User user) {
+    public User save(User user) {
         user.setId(idUsers++);
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());

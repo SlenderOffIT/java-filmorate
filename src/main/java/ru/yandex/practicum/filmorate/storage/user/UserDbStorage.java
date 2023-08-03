@@ -1,22 +1,18 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.storage.user;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import java.sql.ResultSet;
-import java.time.LocalDate;
 import java.util.*;
-import java.util.stream.Collectors;
+
+import static ru.yandex.practicum.filmorate.storage.Mapping.*;
 
 @Slf4j
 @Component
-@Qualifier("userDbStorage")
 public class UserDbStorage implements UserStorage {
 
     JdbcTemplate jdbcTemplate;
@@ -40,26 +36,13 @@ public class UserDbStorage implements UserStorage {
                 "LEFT JOIN friends f ON u.id = f.id_user " +
                 "WHERE u.id = ?";
 
-        List<User> users = jdbcTemplate.query(sql, (rs, rowNum) -> {
-            int userId = rs.getInt("id");
-            String name = rs.getString("name");
-            String email = rs.getString("email");
-            String login = rs.getString("login");
-            LocalDate birthday = rs.getDate("birthday").toLocalDate();
-
-            User user = new User(userId, email, login, name, birthday);
-            do {
-                int friend = rs.getInt("id_friend");
-                user.setListFriends(friend);
-            } while (rs.next());
-            return user;
-        }, id);
+        List<User> users = jdbcTemplate.query(sql, mapperGetUser(), id);
 
         return users.isEmpty() ? null : users.get(0);
     }
 
     @Override
-    public User postUser(User user) {
+    public User save(User user) {
         if (user.getName() == null || user.getName().isEmpty()) {
             user.setName(user.getLogin());
         }
@@ -149,15 +132,7 @@ public class UserDbStorage implements UserStorage {
                 "JOIN FRIENDS f2 ON f2.ID_USER = ? " +
                 "AND f2.ID_FRIEND = f.ID_FRIEND " +
                 "JOIN \"USER\" u ON u.ID  = f.ID_FRIEND " +
-                "WHERE f.ID_USER  = ?", (rs, rowNum) -> {
-            User user = new User();
-            user.setId(rs.getInt("id"));
-            user.setName(rs.getString("name"));
-            user.setEmail(rs.getString("email"));
-            user.setLogin(rs.getString("login"));
-            user.setBirthday(rs.getDate("birthday").toLocalDate());
-            return user;
-        }, id, otherId);
+                "WHERE f.ID_USER  = ?", mapperListMutualFriends(), id, otherId);
     }
 
     @Override
@@ -182,42 +157,5 @@ public class UserDbStorage implements UserStorage {
         } else {
             return true;
         }
-    }
-
-    private RowMapper<List<User>> listUserRowMapper() {
-        return ((rs, rowNum) -> {
-            List<User> users = new ArrayList<>();
-
-            User user = new User();
-            user.setId(rs.getInt("id"));
-            user.setName(rs.getString("name"));
-            user.setEmail(rs.getString("email"));
-            user.setLogin(rs.getString("login"));
-            user.setBirthday(rs.getDate("birthday").toLocalDate());
-
-            do {
-                if (user.getId() == rs.getInt("id")) {
-                    if (rs.getInt("id_friend") > 0) {
-                        user.setListFriends(rs.getInt("id_friend"));
-                    }
-                } else {
-                    user = new User();
-                    user.setId(rs.getInt("id"));
-                    user.setName(rs.getString("name"));
-                    user.setEmail(rs.getString("email"));
-                    user.setLogin(rs.getString("login"));
-                    user.setBirthday(rs.getDate("birthday").toLocalDate());
-                    if (rs.getInt("id_friend") > 0) {
-                        user.setListFriends(rs.getInt("id_friend"));
-                    }
-                }
-                if (!users.stream()
-                        .map(User::getId)
-                        .collect(Collectors.toList()).contains(user.getId())) {
-                    users.add(user);
-                }
-            } while (rs.next());
-            return users;
-        });
     }
 }

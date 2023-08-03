@@ -8,6 +8,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -34,26 +35,26 @@ class UserDbStorageTest {
 
     @Test
     public void testCreatUser() {
-        User addUser = userStorage.postUser(user);
+        User addUser = userStorage.save(user);
         assertEquals(addUser, userStorage.getUsers().get(0));
     }
 
     @Test
     public void testGetUsers() {
-        User addUser = userStorage.postUser(user);
+        User addUser = userStorage.save(user);
         assertEquals(addUser, userStorage.getUsers().get(0));
         assertEquals(1, userStorage.getUsers().size());
     }
 
     @Test
     public void testGetUsersById() {
-        User addUser = userStorage.postUser(user);
+        User addUser = userStorage.save(user);
         assertEquals(1, addUser.getId());
     }
 
     @Test
     public void testUpdate() {
-        User addUser = userStorage.postUser(user);
+        User addUser = userStorage.save(user);
         User updadeUser  = userStorage.update(new User(1, "rgrgg.yandex.ru", "Blabl", "Сидр",
                 LocalDate.of(2005, 1, 1)));
 
@@ -64,7 +65,7 @@ class UserDbStorageTest {
 
     @Test
     public void testDelete() {
-        User addUser = userStorage.postUser(user);
+        User addUser = userStorage.save(user);
         userStorage.delete(addUser.getId());
 
         assertTrue(userStorage.getUsers().isEmpty());
@@ -72,8 +73,8 @@ class UserDbStorageTest {
 
     @Test
     public void testAddingFriends() {
-        User addUser = userStorage.postUser(user);
-        User addUser1 = userStorage.postUser(user1);
+        User addUser = userStorage.save(user);
+        User addUser1 = userStorage.save(user1);
         userStorage.addingFriends(addUser.getId(), addUser1.getId());
         User addFriend = userStorage.getUserId(addUser.getId());
 
@@ -82,8 +83,8 @@ class UserDbStorageTest {
 
     @Test
     public void testDeleteFriends() {
-        User addUser = userStorage.postUser(user);
-        User addUser1 = userStorage.postUser(user1);
+        User addUser = userStorage.save(user);
+        User addUser1 = userStorage.save(user1);
         userStorage.addingFriends(addUser.getId(), addUser1.getId());
         User addFriend = userStorage.getUserId(addUser.getId());
 
@@ -94,8 +95,8 @@ class UserDbStorageTest {
 
     @Test
     public void testListFriends() {
-        User addUser = userStorage.postUser(user);
-        User addUser1 = userStorage.postUser(user1);
+        User addUser = userStorage.save(user);
+        User addUser1 = userStorage.save(user1);
         userStorage.addingFriends(addUser.getId(), addUser1.getId());
         User addFriend = userStorage.getUserId(addUser.getId());
         List<User> friend = userStorage.listFriends(1);
@@ -107,9 +108,9 @@ class UserDbStorageTest {
 
     @Test
     public void testListMutualFriends() {
-        User addUser = userStorage.postUser(user);
-        User addUser1 = userStorage.postUser(user1);
-        User addUser2 = userStorage.postUser(user2);
+        User addUser = userStorage.save(user);
+        User addUser1 = userStorage.save(user1);
+        User addUser2 = userStorage.save(user2);
 
         userStorage.addingFriends(addUser.getId(), addUser1.getId());
         userStorage.addingFriends(addUser2.getId(), addUser1.getId());

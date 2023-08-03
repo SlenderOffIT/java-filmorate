@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -23,7 +23,6 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
 @Service
 @Qualifier("userDbStorage")
 public class UserService {
-    @Qualifier("userDbStorage")
     UserStorage userStorage;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
@@ -51,7 +50,7 @@ public class UserService {
             throw new UserNotFoundException(String.format("Пользователь с таким email %s уже существует.", user.getEmail()));
         }
         validation(user);
-        return userStorage.postUser(user);
+        return userStorage.save(user);
     }
 
     public User update(User user) {

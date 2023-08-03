@@ -10,6 +10,8 @@ import org.springframework.test.annotation.DirtiesContext;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.storage.user.UserDbStorage;
 
 import java.time.LocalDate;
 
@@ -34,25 +36,25 @@ class FilmDbStorageTest {
 
     @Test
     public void testGetFilm() {
-        filmDbStorage.postFilm(film);
+        filmDbStorage.save(film);
         assertEquals(1, filmDbStorage.getFilms().size());
     }
 
     @Test
     public void testFindFilmById() {
-        Film getFilm = filmDbStorage.postFilm(film);
+        Film getFilm = filmDbStorage.save(film);
         assertEquals(getFilm, filmDbStorage.findFilmById(1));
     }
 
     @Test
     public void testPostFilm() {
-        filmDbStorage.postFilm(film);
+        filmDbStorage.save(film);
         assertEquals(film, filmDbStorage.findFilmById(1));
     }
 
     @Test
     public void testUpdate() {
-        Film getFilm = filmDbStorage.postFilm(film);
+        Film getFilm = filmDbStorage.save(film);
         getFilm.setName("Kokoshka");
         getFilm.setMpa(new RatingMpa(4));
         filmDbStorage.update(getFilm);
@@ -62,7 +64,7 @@ class FilmDbStorageTest {
 
     @Test
     public void testDelete() {
-        Film getFilm = filmDbStorage.postFilm(film);
+        Film getFilm = filmDbStorage.save(film);
 
         filmDbStorage.delete(getFilm.getId());
         assertTrue(filmDbStorage.getFilms().isEmpty());
@@ -70,8 +72,8 @@ class FilmDbStorageTest {
 
     @Test
     public void testLikeForFilm() {
-        Film getFilm = filmDbStorage.postFilm(film);
-        User likeUser = userDbStorage.postUser(user);
+        Film getFilm = filmDbStorage.save(film);
+        User likeUser = userDbStorage.save(user);
 
         filmDbStorage.likeForFilm(getFilm.getId(), likeUser.getId());
         assertEquals(1, filmDbStorage.findFilmById(1).getRate());
@@ -79,8 +81,8 @@ class FilmDbStorageTest {
 
     @Test
     public void testDeleteLikeForFilm() {
-        Film getFilm = filmDbStorage.postFilm(film);
-        User likeUser = userDbStorage.postUser(user);
+        Film getFilm = filmDbStorage.save(film);
+        User likeUser = userDbStorage.save(user);
 
         filmDbStorage.likeForFilm(getFilm.getId(), likeUser.getId());
         assertEquals(1, filmDbStorage.findFilmById(1).getRate());
