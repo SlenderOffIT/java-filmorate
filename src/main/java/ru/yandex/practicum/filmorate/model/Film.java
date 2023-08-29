@@ -21,6 +21,7 @@ public class Film {
     private Set<Integer> filmLikes = new TreeSet<>();
     private List<Genre> genres = new ArrayList<>();
     private RatingMpa mpa = new RatingMpa();
+    private final Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
