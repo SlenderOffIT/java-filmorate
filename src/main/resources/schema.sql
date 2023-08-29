@@ -82,5 +82,3 @@ CREATE TABLE if not exists FEED (
     operation varchar(255) not null,
     entity_id integer not null
 );
-
-
