@@ -3,9 +3,12 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -81,11 +84,11 @@ public class FilmService {
         }
         if (!filmStorage.isExist(id)) {
             log.debug("Поступил запрос на добавление лайка у несуществующего фильма с id {}.", id);
-            throw new UserNotFoundException(String.format("Фильм с id %d не не существует.", id));
+            throw new FilmNotFoundException(String.format("Фильм с id %d не не существует.", id));
         }
         if (!filmStorage.isExistLike(id, userId)) {
             log.debug("Повторный лайк от пользователя с id {}.", userId);
-            throw new UserNotFoundException(String.format("Лайк от пользователя %d уже есть.", userId));
+            throw new RuntimeException(String.format("Лайк от пользователя %d уже есть.", userId));
         }
         filmStorage.likeForFilm(id, userId);
     }
@@ -120,5 +123,10 @@ public class FilmService {
                 .sorted(Comparator.comparingInt(Film::getRate).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> getSortedFilmsOfDirector(int directorId,
+                                               FilmDbStorage.SortingCreteria creteria){
+        return filmStorage.getSortedFilmsOfDirector(directorId, creteria);
     }
 }

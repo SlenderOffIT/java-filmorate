@@ -28,6 +28,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return new ArrayList<>(storageFilm.values());
     }
 
+    @Override
+    public List<Film> getSortedFilmsOfDirector(int directorId, FilmDbStorage.SortingCreteria creteria) {
+        return null;
+    }
+
     public Film findFilmById(int id) {
         return storageFilm.get(id);
     }
@@ -81,6 +86,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         Film film = getStorageFilm().get(filmId);
         return film.getFilmLikes().contains(userId);
     }
-
-
 }

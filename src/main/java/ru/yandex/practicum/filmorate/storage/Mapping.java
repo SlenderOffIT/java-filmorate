@@ -1,10 +1,7 @@
 package ru.yandex.practicum.filmorate.storage;
 
 import org.springframework.jdbc.core.RowMapper;
-import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
-import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.model.*;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -34,9 +31,8 @@ public class Mapping {
 
             do {
                 if (film.getId() == rs.getInt("id")) {
-                    if (rs.getInt("id_genre") > 0) {
-                        film.getGenres().add(new Genre(rs.getInt("id_genre"), rs.getString("name_genre")));
-                    }
+                    mapGenres(rs, film);
+                    mapDirectors(rs, film);
                 } else {
                     film = new Film();
                     film.setId(rs.getInt("id"));
@@ -46,9 +42,9 @@ public class Mapping {
                     film.setDuration(rs.getInt("duration"));
                     film.setMpa(new RatingMpa(rs.getInt("mpa")));
                     film.setRate(rs.getInt("rate"));
-                    if (rs.getInt("id_genre") > 0) {
-                        film.getGenres().add(new Genre(rs.getInt("id_genre"), rs.getString("name_genre")));
-                    }
+                    mapGenres(rs, film);
+                    mapDirectors(rs, film);
+
                 }
                 if (!films.stream()
                         .map(Film::getId)
@@ -70,13 +66,28 @@ public class Mapping {
             film.setDuration(rs.getInt("duration"));
             film.setMpa(new RatingMpa(rs.getInt("mpa")));
             film.setRate(rs.getInt("rate"));
-            if (rs.getInt("id_genre") > 0) {
-                do {
-                    film.getGenres().add(new Genre(rs.getInt("id_genre"), rs.getString("name_genre")));
-                } while (rs.next());
-            }
+            do {
+                mapDirectors(rs, film);
+                mapGenres(rs, film);
+            } while (rs.next());
+
             return film;
         };
+    }
+
+    private static void mapDirectors(ResultSet rs, Film film) throws SQLException {
+        if (rs.getInt("director_id") == 0) {
+            return;
+        }
+        film.getDirectors().add(new Director(rs.getInt("director_id"),
+                rs.getString("director_name")));
+    }
+
+    private static void mapGenres(ResultSet rs, Film film) throws SQLException {
+        if (rs.getInt("id_genre") > 0) {
+            film.getGenres().add(new Genre(rs.getInt("id_genre"),
+                    rs.getString("name_genre")));
+        }
     }
 
     public static Film mapperGetStorageFilm(ResultSet rs) throws SQLException {
@@ -89,6 +100,7 @@ public class Mapping {
         film.setReleaseDate(rs.getDate("release_date").toLocalDate());
         RatingMpa ratingMpa = new RatingMpa(rs.getInt("mpa"));
         // Здесь также можно добавить логику для установки остальных свойств объекта Film
+
         return film;
     }
 

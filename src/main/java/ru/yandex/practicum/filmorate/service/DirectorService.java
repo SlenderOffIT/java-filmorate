@@ -23,34 +23,23 @@ public class DirectorService {
 
     public Director getDirectorById(int id) {
         log.debug("Обрабатываем запрос на просмотр режиссера с id {}.", id);
-        if (directorStorage.isExist(id)) {
-            return directorStorage.getDirectorById(id);
-        } else {
-            log.debug("Режиссера с таким id не существующего {}", id);
-            throw new DirectorNotFoundException(String.format("Режиссера с таким id %d не существует.", id));
-        }
+            return directorStorage.getDirectorById(id);// проверка isExist переехала на уровень Storage,
+        //исключение выбрасывается сразу после проверки
     }
 
-
-    //TODO заглушка createDirector
-    public Director createDirector(Director director) {
+    public Director saveDirector(Director director) {
         log.debug("Обрабатываем запрос на создание режиссера.");
-        if (0 == director.getId() || !directorStorage.isExist(director.getId())) {
-            return directorStorage.getDirectorById(director.getId());
-        } else {
-            log.debug("Режиссера с id = {} не существует.", director.getId());
-            throw new DirectorNotFoundException(String.format("Режиссера с таким id %d не существует.", director.getId()));
-        }
+        return directorStorage.saveDirector(director);
     }
 
-    //TODO заглушка updateDirector
     public Director updateDirector(Director director) {
         log.debug("Обрабатываем запрос на изменение режиссера с id {}.", director.getId());
-        if (directorStorage.isExist(director.getId())) {
-            return directorStorage.getDirectorById(director.getId());
-        } else {
-            log.debug("Режиссера с id = {} не существует.", director.getId());
-            throw new DirectorNotFoundException(String.format("Режиссера с таким id %d не существует.", director.getId()));
-        }
+        return directorStorage.updateDirector(director);
+    }
+
+    public void deleteDirector(int id){
+        log.debug("Обрабатываем запрос на удаление режиссера с id {}.", id);
+        directorStorage.deleteDirectorById(id);
     }
 }
+

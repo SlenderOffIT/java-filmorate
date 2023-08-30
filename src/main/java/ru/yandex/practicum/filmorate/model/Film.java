@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.*;
 
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 public class Film {
     private int id;
@@ -19,7 +17,8 @@ public class Film {
     private LocalDate releaseDate;
     @JsonIgnore
     private Set<Integer> filmLikes = new TreeSet<>();
-    private List<Genre> genres = new ArrayList<>();
+    private final Set<Genre> genres = new TreeSet<>(Comparator.comparingInt(Genre::getId));//заменил,
+    // в связи с изменением маппинга.
     private RatingMpa mpa = new RatingMpa();
     private final Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
 
@@ -55,36 +54,5 @@ public class Film {
 
     public void decrementRating() {
         rate--;
-    }
-
-    @Override
-    public String toString() {
-        return "Film{" +
-                "id=" + id +
-                ", rate=" + rate +
-                ", duration=" + duration +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", releaseDate=" + releaseDate +
-                ", filmLikes=" + filmLikes +
-                ", genres=" + genres +
-                ", mpa=" + mpa +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Film film = (Film) o;
-        return id == film.id && rate == film.rate && duration == film.duration &&
-                Objects.equals(name, film.name) && Objects.equals(description, film.description) &&
-                Objects.equals(releaseDate, film.releaseDate) && Objects.equals(filmLikes, film.filmLikes) &&
-                Objects.equals(genres, film.genres) && Objects.equals(mpa, film.mpa);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, rate, duration, name, description, releaseDate, filmLikes, genres, mpa);
     }
 }

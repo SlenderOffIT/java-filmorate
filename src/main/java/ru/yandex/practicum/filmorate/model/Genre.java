@@ -8,5 +8,6 @@ import lombok.*;
 public class Genre {
 
     private int id;
+    @EqualsAndHashCode.Exclude // в сет не должно попасть объектов с одинаковым id
     private String name;
 }
