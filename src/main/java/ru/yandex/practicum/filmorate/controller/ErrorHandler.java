@@ -29,7 +29,8 @@ public class ErrorHandler {
         return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 
-    @ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class, MpaNotFoundException.class, GenreNotFoundException.class})
+    @ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class, MpaNotFoundException.class,
+            GenreNotFoundException.class, ReviewNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundExceptions(final Exception e) {
         e.printStackTrace();
