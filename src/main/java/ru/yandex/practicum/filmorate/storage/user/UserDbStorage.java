@@ -68,7 +68,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User update(User user) {
         String sql = "UPDATE \"USER\" SET id=?, name=?, email=?, login=?, birthday=? " +
-                     "WHERE id = ?";
+                "WHERE id = ?";
         jdbcTemplate.update(sql, user.getId(), user.getName(), user.getEmail(), user.getLogin(), user.getBirthday(), user.getId());
         log.debug("Пользователь {} изменен", user.getLogin());
         return user;
@@ -83,14 +83,14 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void deleteFriends(int idUser, int friendId) {
         String sql = "DELETE FROM friends " +
-                     "WHERE id_user = ? AND id_friend = ?";
+                "WHERE id_user = ? AND id_friend = ?";
         jdbcTemplate.update(sql, idUser, friendId);
     }
 
     @Override
     public void addingFriends(int idUser, int friendId) {
         String sql = "INSERT INTO friends (id_user, id_friend) " +
-                     "VALUES (?, ?)";
+                "VALUES (?, ?)";
         jdbcTemplate.update(sql, idUser, friendId);
     }
 
@@ -119,8 +119,8 @@ public class UserDbStorage implements UserStorage {
     public List<User> listFriends(int id) {
         return jdbcTemplate.query("SELECT u.id, u.NAME, u.EMAIL, u.LOGIN, u.BIRTHDAY, fr.ID_FRIEND " +
                 "FROM (SELECT id_friend " +
-                      "FROM FRIENDS " +
-                      "WHERE ID_USER = ?) AS f " +
+                "FROM FRIENDS " +
+                "WHERE ID_USER = ?) AS f " +
                 "LEFT JOIN \"USER\" u ON f.id_friend = u.ID " +
                 "LEFT JOIN FRIENDS fr on f.id_friend = FR.ID_USER", listUserRowMapper(), id).stream().findFirst().orElse(new ArrayList<>());
     }
@@ -152,10 +152,6 @@ public class UserDbStorage implements UserStorage {
     public boolean isExist(int id) {
         String checkId = "SELECT COUNT(id) FROM \"USER\" WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(checkId, Integer.class, id);
-        if (count < 1) {
-            return false;
-        } else {
-            return true;
-        }
+        return count >= 1;
     }
 }

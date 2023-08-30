@@ -11,7 +11,6 @@ import java.util.Collection;
 import java.util.List;
 
 
-
 /**
  * Контроллер фильмов:
  * /films - просмотр, добавление и редактирование фильма;
@@ -79,7 +78,7 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}")
     public List<Film> getSortedFilmsOfDirector(@PathVariable int directorId,
-                                         @RequestParam("sortBy") SortingCreteria creteria){
+                                               @RequestParam("sortBy") SortingCreteria creteria) {
         return filmService.getSortedFilmsOfDirector(directorId, creteria);
     }
 }

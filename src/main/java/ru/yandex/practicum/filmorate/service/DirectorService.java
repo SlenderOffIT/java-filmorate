@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.storage.DirectorStorage;
 
@@ -23,7 +22,7 @@ public class DirectorService {
 
     public Director getDirectorById(int id) {
         log.debug("Обрабатываем запрос на просмотр режиссера с id {}.", id);
-            return directorStorage.getDirectorById(id);// проверка isExist переехала на уровень Storage,
+        return directorStorage.getDirectorById(id);// проверка isExist переехала на уровень Storage,
         //исключение выбрасывается сразу после проверки
     }
 
@@ -37,7 +36,7 @@ public class DirectorService {
         return directorStorage.updateDirector(director);
     }
 
-    public void deleteDirector(int id){
+    public void deleteDirector(int id) {
         log.debug("Обрабатываем запрос на удаление режиссера с id {}.", id);
         directorStorage.deleteDirectorById(id);
     }
