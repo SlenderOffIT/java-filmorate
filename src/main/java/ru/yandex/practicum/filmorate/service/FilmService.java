@@ -19,13 +19,12 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
  * Класс FilmService выполняет:
- * likeForFilm - добавлением лайка для фильма;
- * deleteLikeForFilm - удалением лайка у фильма;
+ * likeForFilm - добавление лайка для фильма;
+ * deleteLikeForFilm - удаление лайка у фильма;
  * topFilms - выводит список топовых фильмов по лайкам.
  */
 @Slf4j
 @Service
-@Qualifier("filmDbStorage")
 public class FilmService {
 
     FilmStorage filmStorage;

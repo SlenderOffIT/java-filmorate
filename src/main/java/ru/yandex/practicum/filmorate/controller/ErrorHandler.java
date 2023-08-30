@@ -8,10 +8,10 @@ import ru.yandex.practicum.filmorate.exception.*;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 /**
- * Обработчик ошибок контроллера.
- * handlerValidationException - ошибка с полем;
- * handleThrowable - ошибка на стороне сервера;
- * handleNotFoundExceptions - если объект не найден.
+ *  Обработчик ошибок контроллера.
+ *  handlerValidationException - ошибка с полем;
+ *  handleThrowable - ошибка на стороне сервера;
+ *  handleNotFoundExceptions - если объект не найден.
  */
 @RestControllerAdvice
 public class ErrorHandler {
@@ -26,12 +26,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
         e.printStackTrace();
-        return new ErrorResponse("Произошла непредвиденная ошибка " + e.getClass().getName()
-                + " c сообщением " + e.getMessage() + ".");
+        return new ErrorResponse("Произошла непредвиденная ошибка.");
     }
 
     @ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class, MpaNotFoundException.class,
-            GenreNotFoundException.class, DirectorNotFoundException.class})
+            GenreNotFoundException.class, ReviewNotFoundException.class})
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundExceptions(final Exception e) {
         e.printStackTrace();
