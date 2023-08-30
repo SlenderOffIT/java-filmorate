@@ -152,10 +152,6 @@ public class UserDbStorage implements UserStorage {
     public boolean isExist(int id) {
         String checkId = "SELECT COUNT(id) FROM \"USER\" WHERE id = ?";
         Integer count = jdbcTemplate.queryForObject(checkId, Integer.class, id);
-        if (count < 1) {
-            return false;
-        } else {
-            return true;
-        }
+        return count >= 1;
     }
 }

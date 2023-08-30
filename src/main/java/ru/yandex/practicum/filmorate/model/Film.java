@@ -11,7 +11,7 @@ import java.util.*;
 @Setter
 @NoArgsConstructor
 public class Film {
-    private int id;
+    private Integer id;
     private int rate;
     private int duration;
     private String name;
