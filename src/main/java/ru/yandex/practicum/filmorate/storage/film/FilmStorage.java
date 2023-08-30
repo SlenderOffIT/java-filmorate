@@ -8,7 +8,7 @@ import java.util.Map;
 public interface FilmStorage {
     List<Film> getFilms();
 
-    public List<Film> getSortedFilmsOfDirector(int directorId,
+    List<Film> getSortedFilmsOfDirector(int directorId,
                                                FilmDbStorage.SortingCreteria creteria);
 
     Film findFilmById(int id);

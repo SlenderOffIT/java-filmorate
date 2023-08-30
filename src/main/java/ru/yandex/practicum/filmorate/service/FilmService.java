@@ -3,8 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -33,7 +31,7 @@ public class FilmService {
     FilmStorage filmStorage;
     UserStorage userStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage")UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
     }
@@ -110,7 +108,7 @@ public class FilmService {
     }
 
     /**
-     * @param count  обозначает какой топ по количеству лайков нужно найти в списке фильмов,
+     * @param count обозначает какой топ по количеству лайков нужно найти в списке фильмов,
      *              если данное значение не указано, то вернется список из первых 10 фильмов
      * @return вернет нужный список фильмов
      * В методе сортируем (.sort) фильмы по количеству лайков и выводим в обратном порядке,
@@ -126,7 +124,7 @@ public class FilmService {
     }
 
     public List<Film> getSortedFilmsOfDirector(int directorId,
-                                               FilmDbStorage.SortingCreteria creteria){
+                                               FilmDbStorage.SortingCreteria creteria) {
         return filmStorage.getSortedFilmsOfDirector(directorId, creteria);
     }
 }

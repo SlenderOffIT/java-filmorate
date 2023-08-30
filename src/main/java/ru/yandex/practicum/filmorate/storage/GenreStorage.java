@@ -27,7 +27,7 @@ public class GenreStorage {
             genre.setId(rs.getInt("id_genre"));
             genre.setName(rs.getString("name_genre"));
             return genre;
-            }, id);
+        }, id);
     }
 
     public boolean isExist(int id) {

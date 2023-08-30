@@ -32,7 +32,7 @@ public class DirectorStorage {
                         rs.getInt("director_id"),
                         rs.getString("director_name")
                 ), id);
-}
+    }
 
     public Director saveDirector(Director director) {
         log.debug("Отправлен запрос на создание режиссера с id = {}", director.getId());

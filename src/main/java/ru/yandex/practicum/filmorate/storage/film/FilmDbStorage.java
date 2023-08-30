@@ -16,7 +16,6 @@ import static ru.yandex.practicum.filmorate.storage.Mapping.*;
 @Component
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
-    JdbcTemplate jdbcTemplate;
     private final String commonSQLPartForReading = "SELECT f.id, name, description, release_date, duration, mpa, " +
             "COUNT(lf.id_user) AS rate, gf.id_genre, g.name_genre, fd.director_id, d.director_name " +
             "FROM film as f " +
@@ -25,6 +24,7 @@ public class FilmDbStorage implements FilmStorage {
             "LEFT JOIN genre AS g ON gf.id_genre = g.id_genre " +
             "LEFT JOIN films_directors AS fd ON f.id = fd.film_id " +
             "LEFT JOIN directors AS d ON d.director_id = fd.director_id ";
+    JdbcTemplate jdbcTemplate;
 
     public FilmDbStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
@@ -210,11 +210,7 @@ public class FilmDbStorage implements FilmStorage {
         }, filmId, userId);
 
         if (likeMap.containsKey(filmId)) {
-            if (likeMap.get(filmId).equals(userId)) {
-                return false;
-            } else {
-                return true;
-            }
+            return !likeMap.get(filmId).equals(userId);
         } else {
             return true;
         }
@@ -251,7 +247,7 @@ public class FilmDbStorage implements FilmStorage {
         // в связи с особенностями конвертера Spring в enum.
         likes("ORDER BY rate, f.id, id_genre");
 
-        private String sqlPart;
+        private final String sqlPart;
 
         SortingCreteria(String sqlPart) {
             this.sqlPart = sqlPart;
