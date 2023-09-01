@@ -3,7 +3,6 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.AlreadyExists.LikeAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFound.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFound.LikeNotFoundException;
