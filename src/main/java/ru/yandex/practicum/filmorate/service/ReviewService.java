@@ -3,10 +3,10 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
-import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
@@ -31,9 +31,9 @@ import java.util.Optional;
 @Slf4j
 public class ReviewService {
 
-    private ReviewStorage reviewStorage;
-    private UserStorage userStorage;
-    private FilmStorage filmStorage;
+    private final ReviewStorage reviewStorage;
+    private final UserStorage userStorage;
+    private final FilmStorage filmStorage;
 
     public ReviewService(@Qualifier("reviewDbStorage") ReviewStorage reviewStorage,
                          @Qualifier("userDbStorage") UserStorage userStorage,

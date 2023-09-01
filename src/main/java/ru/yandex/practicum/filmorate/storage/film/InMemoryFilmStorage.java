@@ -4,9 +4,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Данный класс InMemoryFilmStorage предназначен для хранения, добавления, обновления, удаления
@@ -20,12 +23,17 @@ import java.util.*;
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private int id = 1;
     @Getter
     private final Map<Integer, Film> storageFilm = new HashMap<>();
+    private int id = 1;
 
     public List<Film> getFilms() {
         return new ArrayList<>(storageFilm.values());
+    }
+
+    @Override
+    public List<Film> getSortedFilmsOfDirector(int directorId, FilmSortingCriteria creteria) {
+        return null;
     }
 
     public Film findFilmById(int id) {
@@ -81,6 +89,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         Film film = getStorageFilm().get(filmId);
         return film.getFilmLikes().contains(userId);
     }
-
-
 }

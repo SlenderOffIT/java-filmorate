@@ -5,9 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.Collection;
 import java.util.List;
+
 
 /**
  * Контроллер фильмов:
@@ -15,6 +17,8 @@ import java.util.List;
  * /films/{id} - просмотр и удаление фильма;
  * /films/popular - просмотр топа фильмов, defaultValue = 10;
  * /films/{id}/like/{userId} - добавление и удаление лайков фильму.
+ * /films/director/{directorId}?sortBy=[year,likes] - получение списка фильмов конкретного режиссера,
+ * отсортированного по годам/популярности.
  */
 @Slf4j
 @RestController
@@ -70,5 +74,13 @@ public class FilmController {
     public void deleteLikeForFilm(@PathVariable int id, @PathVariable int userId) {
         log.debug("Поступил запрос на удаление лайка фильму с id {} от пользователя с id {}.", id, userId);
         filmService.deleteLikeForFilm(id, userId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getSortedFilmsOfDirector(@PathVariable int directorId,
+                                               @RequestParam("sortBy") FilmSortingCriteria criteria) {
+        log.debug("Поступил запрос на получение фильмов режиссера с id {} по критерию {}.",
+                directorId, criteria.name());
+        return filmService.getSortedFilmsOfDirector(directorId, criteria);
     }
 }

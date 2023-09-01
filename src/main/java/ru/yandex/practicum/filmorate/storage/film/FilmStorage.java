@@ -1,12 +1,16 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FilmStorage {
     List<Film> getFilms();
+
+    List<Film> getSortedFilmsOfDirector(int directorId,
+                                        FilmSortingCriteria creteria);
 
     Film findFilmById(int id);
 

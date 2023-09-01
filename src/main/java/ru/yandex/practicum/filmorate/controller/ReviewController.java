@@ -39,7 +39,7 @@ public class ReviewController {
     }
 
     @PutMapping()
-    public Review updateReview(@Valid @RequestBody Review review) {
+    public Review updateReview(@RequestBody Review review) {
         log.debug(String.format("Поступил запрос на обновление отзыва с id %s", review.getReviewId()));
         return reviewService.updateReview(review);
     }

@@ -26,7 +26,7 @@ public class RatingMpaStorage {
             ratingMpa.setId(rs.getInt("id_rating_mpa"));
             ratingMpa.setName(rs.getString("name_mpa"));
             return ratingMpa;
-            }, id);
+        }, id);
     }
 
     public boolean isExist(int id) {

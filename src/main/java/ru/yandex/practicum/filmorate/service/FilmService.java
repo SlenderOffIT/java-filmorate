@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.AlreadyExists.LikeAlreadyExistsException;
+import ru.yandex.practicum.filmorate.exception.NotFound.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.LikeNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.Collection;
 import java.util.Comparator;
@@ -18,8 +21,10 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
  * Класс FilmService выполняет:
- * likeForFilm - добавление лайка для фильма;
- * deleteLikeForFilm - удаление лайка у фильма;
+ * likeForFilm - добавлением лайка для фильма;
+ * deleteLikeForFilm - удалением лайка у фильма;
+ * getSortedFilmsOfDirector - возвращает список фильмов режиссера с определенным id,
+ * отсортированных по заданному критерию;
  * topFilms - выводит список топовых фильмов по лайкам.
  */
 @Slf4j
@@ -80,11 +85,11 @@ public class FilmService {
         }
         if (!filmStorage.isExist(id)) {
             log.debug("Поступил запрос на добавление лайка у несуществующего фильма с id {}.", id);
-            throw new UserNotFoundException(String.format("Фильм с id %d не не существует.", id));
+            throw new FilmNotFoundException(String.format("Фильм с id %d не не существует.", id));
         }
         if (!filmStorage.isExistLike(id, userId)) {
             log.debug("Повторный лайк от пользователя с id {}.", userId);
-            throw new UserNotFoundException(String.format("Лайк от пользователя %d уже есть.", userId));
+            throw new LikeAlreadyExistsException(String.format("Лайк от пользователя %d уже есть.", userId));
         }
         filmStorage.likeForFilm(id, userId);
     }
@@ -96,17 +101,17 @@ public class FilmService {
         }
         if (!filmStorage.isExist(id)) {
             log.debug("Поступил запрос на удаление лайка у несуществующего фильма с id {}", id);
-            throw new UserNotFoundException(String.format("Фильм с id %d не не существует", id));
+            throw new FilmNotFoundException(String.format("Фильм с id %d не не существует", id));
         }
         if (filmStorage.isExistLike(id, userId)) {
             log.debug("Лайка от пользователя с id {} нету.", userId);
-            throw new UserNotFoundException(String.format("Лайк от пользователя %d нету.", userId));
+            throw new LikeNotFoundException(String.format("Лайк от пользователя %d нету.", userId));
         }
         filmStorage.deleteLikeForFilm(id, userId);
     }
 
     /**
-     * @param count  обозначает какой топ по количеству лайков нужно найти в списке фильмов,
+     * @param count обозначает какой топ по количеству лайков нужно найти в списке фильмов,
      *              если данное значение не указано, то вернется список из первых 10 фильмов
      * @return вернет нужный список фильмов
      * В методе сортируем (.sort) фильмы по количеству лайков и выводим в обратном порядке,
@@ -119,5 +124,12 @@ public class FilmService {
                 .sorted(Comparator.comparingInt(Film::getRate).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
+    }
+
+    public List<Film> getSortedFilmsOfDirector(int directorId,
+                                               FilmSortingCriteria criteria) {
+        log.debug("Пользователь запросил список фильмов режиссера с id = {}, отсортированных по критерию {}",
+                directorId, criteria.name());
+        return filmStorage.getSortedFilmsOfDirector(directorId, criteria);
     }
 }

@@ -1,14 +1,15 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.Comparator;
+import java.util.Set;
+import java.util.TreeSet;
 
 @Data
-@Getter
-@Setter
 @NoArgsConstructor
 public class Film {
     private Integer id;
@@ -17,10 +18,11 @@ public class Film {
     private String name;
     private String description;
     private LocalDate releaseDate;
+    private RatingMpa mpa = new RatingMpa();
     @JsonIgnore
     private Set<Integer> filmLikes = new TreeSet<>();
-    private List<Genre> genres = new ArrayList<>();
-    private RatingMpa mpa = new RatingMpa();
+    private Set<Genre> genres = new TreeSet<>(Comparator.comparingInt(Genre::getId));
+    private Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;
@@ -54,36 +56,5 @@ public class Film {
 
     public void decrementRating() {
         rate--;
-    }
-
-    @Override
-    public String toString() {
-        return "Film{" +
-                "id=" + id +
-                ", rate=" + rate +
-                ", duration=" + duration +
-                ", name='" + name + '\'' +
-                ", description='" + description + '\'' +
-                ", releaseDate=" + releaseDate +
-                ", filmLikes=" + filmLikes +
-                ", genres=" + genres +
-                ", mpa=" + mpa +
-                '}';
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Film film = (Film) o;
-        return id == film.id && rate == film.rate && duration == film.duration &&
-                Objects.equals(name, film.name) && Objects.equals(description, film.description) &&
-                Objects.equals(releaseDate, film.releaseDate) && Objects.equals(filmLikes, film.filmLikes) &&
-                Objects.equals(genres, film.genres) && Objects.equals(mpa, film.mpa);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, rate, duration, name, description, releaseDate, filmLikes, genres, mpa);
     }
 }

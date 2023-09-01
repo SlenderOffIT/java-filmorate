@@ -5,7 +5,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.*;
@@ -113,7 +113,7 @@ public class ReviewDbStorage implements ReviewStorage {
     public void deleteDislike(Integer reviewId, Integer userId) {
         Set<Integer> likesReviewById = new HashSet<>(
                 jdbcTemplate.query("SELECT * FROM review_likes where REVIEW_ID = ? and IS_POSITIVE = false",
-                (rs, rowNum) -> rs.getInt("user_id"), reviewId));
+                        (rs, rowNum) -> rs.getInt("user_id"), reviewId));
         if (likesReviewById.contains(userId)) {
             jdbcTemplate.update("DELETE FROM review_likes WHERE review_id = ? and user_id = ? and is_positive = false", reviewId, userId);
             jdbcTemplate.update("UPDATE reviews SET useful = ? where review_id = ?", getUseful(reviewId), reviewId);
@@ -136,12 +136,12 @@ public class ReviewDbStorage implements ReviewStorage {
 
     private Integer getUseful(Integer reviewId) {
         Integer countLikes = jdbcTemplate.queryForObject("SELECT count(*) AS count " +
-                "FROM review_likes " +
-                "WHERE review_id = ? and is_positive = true",
+                        "FROM review_likes " +
+                        "WHERE review_id = ? and is_positive = true",
                 (rs, rowNum) -> rs.getInt("count"), reviewId);
         Integer countDislikes = jdbcTemplate.queryForObject("SELECT count(*) AS count " +
-                "FROM review_likes " +
-                "WHERE review_id = ? and is_positive = false",
+                        "FROM review_likes " +
+                        "WHERE review_id = ? and is_positive = false",
                 (rs, rowNum) -> rs.getInt("count"), reviewId);
         Integer count = 0;
         count += countLikes;
