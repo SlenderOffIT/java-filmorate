@@ -64,6 +64,34 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> searchFilms(String query, String by) {
+        log.debug("Выполняем searchFilms({}, {})", query, by);
+        boolean isSearchByFilm = by.contains("title");
+
+        boolean isSearchByDirector = by.contains("director");
+
+        String where = isSearchByFilm && isSearchByDirector ?
+                "WHERE LOWER(f.name) LIKE LOWER(?) and LOWER(d.director_name) LIKE LOWER(?) " :
+                isSearchByFilm ?
+                        "WHERE LOWER(f.name) LIKE LOWER(?) " :
+                        "WHERE LOWER(d.director_name) LIKE LOWER(?) ";
+
+        String sql = commonSQLPartForReading + where +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY f.id, id_genre, director_id";
+
+        return isSearchByFilm && isSearchByDirector ?
+                jdbcTemplate.query(sql, mapperGetFilms(),
+                        wrapInPercent(query), wrapInPercent(query)).stream()
+                .findFirst()
+                .orElse(Collections.emptyList()) :
+                jdbcTemplate.query(sql, mapperGetFilms(),
+                                wrapInPercent(query)).stream()
+                        .findFirst()
+                        .orElse(Collections.emptyList());
+    }
+
+    @Override
     public Film findFilmById(int id) {
         log.debug("Выполняем findFilmById({}})", id);
         return jdbcTemplate.queryForObject(commonSQLPartForReading +
@@ -243,6 +271,10 @@ public class FilmDbStorage implements FilmStorage {
     private void updateFilmsDirectorsRelationship(Film film) {
         jdbcTemplate.update("DELETE FROM films_directors WHERE film_id = ?", film.getId());
         insertIntoFilmsDirectors(film);
+    }
+
+    private String wrapInPercent(String str) {
+        return new String("%" + str + "%");
     }
 }
 

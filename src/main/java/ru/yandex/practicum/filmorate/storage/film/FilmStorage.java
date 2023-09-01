@@ -12,6 +12,8 @@ public interface FilmStorage {
     List<Film> getSortedFilmsOfDirector(int directorId,
                                         FilmSortingCriteria creteria);
 
+    List<Film> searchFilms(String query, String by);
+
     Film findFilmById(int id);
 
     Film save(Film film);
