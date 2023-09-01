@@ -4,6 +4,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.storage.feed.InMemoryFeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
@@ -17,6 +18,7 @@ class FilmControllerTest {
     FilmController filmController;
     InMemoryUserStorage inMemoryUserStorage;
     InMemoryFilmStorage inMemoryFilmStorage;
+    InMemoryFeedStorage inMemoryFeedStorage;
     FilmService filmService;
     Film film;
     Film film1;
@@ -25,7 +27,8 @@ class FilmControllerTest {
     void create() {
         inMemoryFilmStorage = new InMemoryFilmStorage();
         inMemoryUserStorage = new InMemoryUserStorage();
-        filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage);
+        inMemoryFeedStorage = new InMemoryFeedStorage();  // Инициализируем хранилище
+        filmService = new FilmService(inMemoryFilmStorage, inMemoryUserStorage, inMemoryFeedStorage);  // Передаем в конструктор
         filmController = new FilmController(filmService);
 
         film = new Film("Касандра", "описание",

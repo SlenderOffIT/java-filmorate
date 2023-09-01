@@ -8,6 +8,7 @@ import ru.yandex.practicum.filmorate.exception.NotFound.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFound.LikeNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFound.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
@@ -17,6 +18,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static ru.yandex.practicum.filmorate.storage.feed.FeedDbStorage.*;
 import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
@@ -33,10 +35,14 @@ public class FilmService {
 
     FilmStorage filmStorage;
     UserStorage userStorage;
+    FeedStorage feedStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
+    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                       @Qualifier("userDbStorage") UserStorage userStorage,
+                       @Qualifier("feedDbStorage") FeedStorage feedStorage) {  // Добавляем инициализацию в конструктор
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
+        this.feedStorage = feedStorage;  // Инициализируем feedStorage
     }
 
     public Collection<Film> getFilms() {
@@ -92,6 +98,8 @@ public class FilmService {
             throw new LikeAlreadyExistsException(String.format("Лайк от пользователя %d уже есть.", userId));
         }
         filmStorage.likeForFilm(id, userId);
+        feedStorage.addFeed(userId, LIKE, ADD, id);  // Добавляем событие в ленту
+
     }
 
     public void deleteLikeForFilm(int id, int userId) {
@@ -108,6 +116,8 @@ public class FilmService {
             throw new LikeNotFoundException(String.format("Лайк от пользователя %d нету.", userId));
         }
         filmStorage.deleteLikeForFilm(id, userId);
+        feedStorage.addFeed(userId, LIKE, REMOVE, id);  // Добавляем событие об удалении лайка в ленту
+
     }
 
     /**

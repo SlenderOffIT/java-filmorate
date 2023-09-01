@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 
@@ -76,4 +77,14 @@ public class UserController {
         log.debug("Поступил запрос на удаление из друзей от пользователя с id {}, пользователя с id {}.", id, friendId);
         userService.deleteFriends(id, friendId);
     }
+
+    @GetMapping("/{id}/feed")
+    public List<Feed> getFeed(@PathVariable int id) {
+        List<Feed> feeds = userService.getFeed(id);
+        if (feeds.size() > 9) {
+            feeds = feeds.subList(0, 9);
+        }
+        return feeds;
+    }
+
 }
