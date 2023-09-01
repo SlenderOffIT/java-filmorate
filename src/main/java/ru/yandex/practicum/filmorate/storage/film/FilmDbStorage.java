@@ -98,7 +98,7 @@ public class FilmDbStorage implements FilmStorage {
         genreFilmInsert.executeBatch(genreParamsList.toArray(new Map[0]));
 
         insertIntoFilmsDirectors(id.intValue(), film);
-
+        film.setId(id.intValue());
         return findFilmById(id.intValue());
     }
 
