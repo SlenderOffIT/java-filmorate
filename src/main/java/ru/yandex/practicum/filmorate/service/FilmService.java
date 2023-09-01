@@ -29,7 +29,6 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
  */
 @Slf4j
 @Service
-@Qualifier("filmDbStorage")
 public class FilmService {
 
     FilmStorage filmStorage;
