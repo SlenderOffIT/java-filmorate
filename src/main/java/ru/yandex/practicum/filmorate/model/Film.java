@@ -1,29 +1,25 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
-import java.util.Comparator;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 @Data
 @NoArgsConstructor
 public class Film {
-    private final Set<Genre> genres = new TreeSet<>(Comparator.comparingInt(Genre::getId));//заменил,
-    private final Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
-    private int id;
+    private Integer id;
     private int rate;
     private int duration;
     private String name;
     private String description;
     private LocalDate releaseDate;
+    private RatingMpa mpa = new RatingMpa();
     @JsonIgnore
     private Set<Integer> filmLikes = new TreeSet<>();
-    // в связи с изменением маппинга.
-    private RatingMpa mpa = new RatingMpa();
+    private Set<Genre> genres = new TreeSet<>(Comparator.comparingInt(Genre::getId));
+    private Set<Director> directors = new TreeSet<>(Comparator.comparingInt(Director::getId));
 
     public Film(String name, String description, LocalDate releaseDate, int duration) {
         this.name = name;

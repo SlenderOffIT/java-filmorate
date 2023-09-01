@@ -12,11 +12,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-@Component
 @Primary
 @RequiredArgsConstructor
 @Slf4j
-public class DirectorDbStorage {
+@Component
+public class DirectorDbStorage implements DirectorStorage{
     private final JdbcTemplate jdbcTemplate;
 
     public List<Director> getAllDirectors() {

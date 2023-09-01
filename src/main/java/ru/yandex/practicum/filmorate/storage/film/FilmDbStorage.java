@@ -14,7 +14,7 @@ import java.util.*;
 
 import static ru.yandex.practicum.filmorate.storage.Mapping.*;
 
-@Component
+@Component ("filmDbStorage")
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final String commonSQLPartForReading = "SELECT f.id, name, description, release_date, duration, mpa, " +
@@ -67,7 +67,8 @@ public class FilmDbStorage implements FilmStorage {
     public Film findFilmById(int id) {
         log.debug("Выполняем findFilmById({}})", id);
         return jdbcTemplate.queryForObject(commonSQLPartForReading +
-                "WHERE f.id =? ", filmRowMapper(), id);
+                "WHERE f.id =? " +
+                "GROUP BY gf.id_genre", filmRowMapper(), id);
     }
 
     @Override

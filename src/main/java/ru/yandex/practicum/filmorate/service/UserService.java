@@ -21,7 +21,6 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
  */
 @Slf4j
 @Service
-@Qualifier("userDbStorage")
 public class UserService {
     UserStorage userStorage;
 

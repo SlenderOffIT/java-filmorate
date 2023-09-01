@@ -10,11 +10,13 @@ import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.exception.NotFound.NotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
+import javax.validation.ConstraintViolationException;
+
 /**
- * Обработчик ошибок контроллера.
- * handlerValidationException - ошибка с полем;
- * handleThrowable - ошибка на стороне сервера;
- * handleNotFoundExceptions - если объект не найден.
+ *  Обработчик ошибок контроллера.
+ *  handlerValidationException - ошибка с полем;
+ *  handleThrowable - ошибка на стороне сервера;
+ *  handleNotFoundExceptions - если объект не найден.
  */
 @RestControllerAdvice
 public class ErrorHandler {
@@ -25,15 +27,11 @@ public class ErrorHandler {
         return new ErrorResponse(String.format("Ошибка с полем \"%s\".", e.getParameter()));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
+
+    @ExceptionHandler(ConstraintViolationException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
-        StringBuilder message = new StringBuilder("Аргументы метода не прошли проверку: ");
-        e.getBindingResult().getFieldErrors().stream()
-                .map(error -> error.getObjectName() + " " + error.getField()
-                        + ": " + error.getDefaultMessage() + " ")
-                .forEach(message::append);
-        return new ErrorResponse(message.toString());
+    public ErrorResponse handleMethodArgumentNotValidException(final ConstraintViolationException e) {
+        return new ErrorResponse(e.getMessage());
     }
 
 

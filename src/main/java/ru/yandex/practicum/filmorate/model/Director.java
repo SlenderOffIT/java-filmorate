@@ -2,7 +2,9 @@ package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.validation.annotation.Validated;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 /**
@@ -11,6 +13,7 @@ import javax.validation.constraints.NotBlank;
  * сет (см. model.film)
  */
 @Data
+@Validated
 public class Director {
     private final int id;
     @NotBlank

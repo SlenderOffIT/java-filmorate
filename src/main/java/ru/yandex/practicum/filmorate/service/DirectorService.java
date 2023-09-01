@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.validation.annotation.Validated;
 import ru.yandex.practicum.filmorate.exception.AlreadyExists.DirectorAlreadyExisitsException;
 import ru.yandex.practicum.filmorate.exception.NotFound.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -14,6 +15,7 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
+@Validated
 public class DirectorService {
 
     DirectorStorage directorStorage;
