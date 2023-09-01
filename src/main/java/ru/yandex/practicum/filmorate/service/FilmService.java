@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.AlreadyExists.LikeAlreadyExistsException;
 import ru.yandex.practicum.filmorate.exception.NotFound.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFound.LikeNotFoundException;
@@ -26,6 +27,7 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
  * getSortedFilmsOfDirector - возвращает список фильмов режиссера с определенным id,
  * отсортированных по заданному критерию;
  * topFilms - выводит список топовых фильмов по лайкам.
+ * searchFilms - ывводит список фильмов, отсортированных по популярности, по параметрам поиска
  */
 @Slf4j
 @Service
@@ -131,5 +133,11 @@ public class FilmService {
         log.debug("Пользователь запросил список фильмов режиссера с id = {}, отсортированных по критерию {}",
                 directorId, criteria.name());
         return filmStorage.getSortedFilmsOfDirector(directorId, criteria);
+    }
+
+    public List<Film> searchFilms(String query, String by) {
+        log.debug("Пользователь запросил список фильмов по поиску с параметрами: название {} и по {}.",
+                query, by);
+        return filmStorage.searchFilms(query, by);
     }
 }
