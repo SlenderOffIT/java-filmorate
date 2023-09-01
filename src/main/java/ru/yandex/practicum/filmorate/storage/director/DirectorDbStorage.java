@@ -16,7 +16,7 @@ import java.util.Objects;
 @RequiredArgsConstructor
 @Slf4j
 @Component
-public class DirectorDbStorage implements DirectorStorage{
+public class DirectorDbStorage implements DirectorStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Director> getAllDirectors() {

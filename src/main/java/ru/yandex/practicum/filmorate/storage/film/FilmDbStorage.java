@@ -14,7 +14,7 @@ import java.util.*;
 
 import static ru.yandex.practicum.filmorate.storage.Mapping.*;
 
-@Component ("filmDbStorage")
+@Component("filmDbStorage")
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final String commonSQLPartForReading = "SELECT f.id, name, description, release_date, duration, mpa, " +
