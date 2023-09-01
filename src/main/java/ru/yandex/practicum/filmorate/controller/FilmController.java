@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage.SortingCreteria;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.Collection;
 import java.util.List;
@@ -78,7 +78,9 @@ public class FilmController {
 
     @GetMapping("/director/{directorId}")
     public List<Film> getSortedFilmsOfDirector(@PathVariable int directorId,
-                                               @RequestParam("sortBy") SortingCreteria creteria) {
-        return filmService.getSortedFilmsOfDirector(directorId, creteria);
+                                               @RequestParam("sortBy") FilmSortingCriteria criteria) {
+        log.debug("Поступил запрос на получение фильмов режиссера с id {} по критерию {}.",
+                directorId, criteria.name());
+        return filmService.getSortedFilmsOfDirector(directorId, criteria);
     }
 }

@@ -5,10 +5,15 @@ import lombok.EqualsAndHashCode;
 
 import javax.validation.constraints.NotBlank;
 
+/**
+ * id - суррогатный ключ из БД
+ * name - имя режиссера, исключен из equals и hashCode чтобы правильно формировался
+ * сет (см. model.film)
+ */
 @Data
 public class Director {
     private final int id;
     @NotBlank
-    @EqualsAndHashCode.Exclude // чтобы в сет не попало 2 объекта с одинаковым id
+    @EqualsAndHashCode.Exclude
     private final String name;
 }

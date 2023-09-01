@@ -1,11 +1,11 @@
-package ru.yandex.practicum.filmorate.storage;
+package ru.yandex.practicum.filmorate.storage.director;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 
 import java.util.List;
@@ -13,9 +13,10 @@ import java.util.Map;
 import java.util.Objects;
 
 @Component
+@Primary
 @RequiredArgsConstructor
 @Slf4j
-public class DirectorStorage {
+public class DirectorDbStorage {
     private final JdbcTemplate jdbcTemplate;
 
     public List<Director> getAllDirectors() {
@@ -42,7 +43,7 @@ public class DirectorStorage {
         int id = directorInsert.executeAndReturnKey(Map.of(
                 "director_name", director.getName()
         )).intValue();
-        return getDirectorById(id);//возвращаем объект из базы
+        return getDirectorById(id);
     }
 
     public Director updateDirector(Director director) {
@@ -52,7 +53,7 @@ public class DirectorStorage {
         if (isExist(director.getId())) {
             jdbcTemplate.update(sql, director.getId(), director.getName());
         }
-        return getDirectorById(director.getId());//возвращаем объект из базы
+        return getDirectorById(director.getId());
     }
 
     public void deleteDirectorById(int id) {
@@ -65,10 +66,6 @@ public class DirectorStorage {
     public boolean isExist(int id) {
         String sql = "SELECT EXISTS (SELECT director_id FROM directors WHERE director_id = ?)";
 
-        if (!jdbcTemplate.queryForObject(sql, Boolean.class, id)) {
-            log.warn("Режиссера с таким id не существует {}", id);
-            throw new DirectorNotFoundException(String.format("Режиссер с id = %d не найден", id));
-        }
-        return true;
+        return jdbcTemplate.queryForObject(sql, Boolean.class, id);
     }
 }

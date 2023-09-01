@@ -4,10 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
-import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exception.NotFound.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.*;
 
@@ -33,6 +34,7 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getFilms() {
+        log.debug("Выполняем getFilms()");
         return jdbcTemplate.query(commonSQLPartForReading +
                         "GROUP BY f.id, gf.id_genre, fd.director_id " +
                         "ORDER BY f.id, id_genre, director_id", mapperGetFilms()).stream()
@@ -42,7 +44,8 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getSortedFilmsOfDirector(int directorId,
-                                               SortingCreteria creteria) {
+                                               FilmSortingCriteria creteria) {
+        log.debug("Выполняем getSortedFilmsOfDirector({}, {})", directorId, creteria.name());
         String sql = commonSQLPartForReading +
                 "WHERE fd.director_id = ? " +
                 "GROUP BY f.id " +
@@ -62,14 +65,14 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film findFilmById(int id) {
+        log.debug("Выполняем findFilmById({}})", id);
         return jdbcTemplate.queryForObject(commonSQLPartForReading +
-                "WHERE f.id =? " +
-                "GROUP BY gf.id_genre " +
-                "ORDER BY id_genre", filmRowMapper(), id);
+                "WHERE f.id =? ", filmRowMapper(), id);
     }
 
     @Override
     public Film save(Film film) {
+        log.debug("Выполняем save(Film film)");
         SimpleJdbcInsert filmInsert = new SimpleJdbcInsert(jdbcTemplate.getDataSource())
                 .withTableName("film")
                 .usingGeneratedKeyColumns("id");
@@ -93,11 +96,9 @@ public class FilmDbStorage implements FilmStorage {
                 .withTableName("GENRE_FILM");
         genreFilmInsert.executeBatch(genreParamsList.toArray(new Map[0]));
 
-        insertIntoFilmsDirectors((int) id, film);
+        insertIntoFilmsDirectors(id.intValue(), film);
 
-        film.setId(id.intValue());
-
-        return film;
+        return findFilmById(id.intValue());
     }
 
 
@@ -220,6 +221,7 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getDirectors().isEmpty()) {
             return;
         }
+
         List<Map<String, Object>> filmsDirectorsInsertion = new ArrayList<>();
         for (Director director : film.getDirectors()) {
             Map<String, Object> entitiesIdMap = Map.of(
@@ -240,22 +242,6 @@ public class FilmDbStorage implements FilmStorage {
     private void updateFilmsDirectorsRelationship(Film film) {
         jdbcTemplate.update("DELETE FROM films_directors WHERE film_id = ?", film.getId());
         insertIntoFilmsDirectors(film);
-    }
-
-    public enum SortingCreteria {
-        year("ORDER BY EXTRACT(YEAR FROM f.release_date), f.id, id_genre"),// enum маленькими буквами
-        // в связи с особенностями конвертера Spring в enum.
-        likes("ORDER BY rate, f.id, id_genre");
-
-        private final String sqlPart;
-
-        SortingCreteria(String sqlPart) {
-            this.sqlPart = sqlPart;
-        }
-
-        public String getSqlPart() {
-            return sqlPart;
-        }
     }
 }
 

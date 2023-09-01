@@ -1,10 +1,13 @@
 package ru.yandex.practicum.filmorate.controller;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.exception.AlreadyExists.AlreadyExistsException;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
+import ru.yandex.practicum.filmorate.exception.NotFound.NotFoundException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 /**
@@ -22,6 +25,18 @@ public class ErrorHandler {
         return new ErrorResponse(String.format("Ошибка с полем \"%s\".", e.getParameter()));
     }
 
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleMethodArgumentNotValidException(final MethodArgumentNotValidException e) {
+        StringBuilder message = new StringBuilder("Аргументы метода не прошли проверку: ");
+        e.getBindingResult().getFieldErrors().stream()
+                .map(error -> error.getObjectName() + " " + error.getField()
+                        + ": " + error.getDefaultMessage() + " ")
+                .forEach(message::append);
+        return new ErrorResponse(message.toString());
+    }
+
+
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleThrowable(final Throwable e) {
@@ -30,11 +45,17 @@ public class ErrorHandler {
                 + " c сообщением " + e.getMessage() + ".");
     }
 
-    @ExceptionHandler({UserNotFoundException.class, FilmNotFoundException.class, MpaNotFoundException.class,
-            GenreNotFoundException.class, DirectorNotFoundException.class})
+    @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleNotFoundExceptions(final Exception e) {
+    public ErrorResponse handleNotFoundExceptions(final NotFoundException e) {
         e.printStackTrace();
         return new ErrorResponse(e.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyExistsException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handlerAlreadyExistsException(final AlreadyExistsException e) {
+        return new ErrorResponse(String.format("Ошибка, связанная с наличием объекта в базе: %s.",
+                e.getMessage()));
     }
 }

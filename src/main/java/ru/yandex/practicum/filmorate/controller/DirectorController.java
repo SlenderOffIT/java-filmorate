@@ -6,13 +6,12 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.service.DirectorService;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
  * Контроллер режиссеров:
- * /directors - просмотр, добавление и редактирование фильма;
- * /directors/{id} - просмотр и удаление фильма;
+ * /directors - просмотр режиссеров, добавление и редактирование режиссера;
+ * /directors/{id} - просмотр и удаление режиссера по id;
  */
 
 @Slf4j
@@ -36,13 +35,13 @@ public class DirectorController {
     }
 
     @PostMapping
-    public Director saveDirector(@Valid @RequestBody Director director) {
+    public Director saveDirector(@RequestBody Director director) {
         log.debug("Поступил запрос на сохранение режиссера.");
         return directorService.saveDirector(director);
     }
 
     @PutMapping
-    public Director updateDirector(@Valid @RequestBody Director director) {
+    public Director updateDirector(@RequestBody Director director) {
         log.debug("Поступил запрос на изменение режиссера с id {}.", director.getId());
         return directorService.updateDirector(director);
     }
