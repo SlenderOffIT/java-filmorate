@@ -71,14 +71,14 @@ public class FilmDbStorage implements FilmStorage {
         boolean isSearchByDirector = by.contains("director");
 
         String where = isSearchByFilm && isSearchByDirector ?
-                "WHERE LOWER(f.name) LIKE LOWER(?) and LOWER(d.director_name) LIKE LOWER(?) " :
+                "WHERE LOWER(f.name) LIKE LOWER(?) OR LOWER(d.director_name) LIKE LOWER(?) " :
                 isSearchByFilm ?
                         "WHERE LOWER(f.name) LIKE LOWER(?) " :
                         "WHERE LOWER(d.director_name) LIKE LOWER(?) ";
 
         String sql = commonSQLPartForReading + where +
                 "GROUP BY f.id, gf.id_genre, fd.director_id " +
-                "ORDER BY f.id, id_genre, director_id";
+                "ORDER BY f.rate";
 
         return isSearchByFilm && isSearchByDirector ?
                 jdbcTemplate.query(sql, mapperGetFilms(),
