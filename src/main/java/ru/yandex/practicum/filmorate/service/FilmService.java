@@ -133,7 +133,7 @@ public class FilmService {
         if (genreId != null && year != null) {
             log.debug("Пользователь запросил список {} самых популярных фильмов за {} год с id жанра {}.",
                     count, year, genreId);
-            return getPopularGenreYearFilms(genreId, year, count);
+            return filmStorage.popularGenreYearSearch(genreId, year, count);
         }
 
         if (genreId != null) {
@@ -166,11 +166,5 @@ public class FilmService {
         log.debug("Пользователь запросил список фильмов по поиску с параметрами: название {} и по {}.",
                 query, by);
         return filmStorage.searchFilms(query, by);
-    }
-
-    public List<Film> getPopularGenreYearFilms(int genreId, int year, int limit) {
-        log.debug("Пользователь запросил список {} самых популярных фильмов за {} год с id жанра {}.",
-                limit, year, genreId);
-        return filmStorage.popularGenreYearSearch(genreId, year, limit);
     }
 }
