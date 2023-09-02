@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.storage.feed.InMemoryFeedStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
@@ -17,6 +18,7 @@ class UserControllerTest {
 
     InMemoryUserStorage inMemoryUserStorage;
     InMemoryFeedStorage inMemoryFeedStorage;
+    InMemoryFilmStorage inMemoryFilmStorage;
     UserService userService;
     UserController userController;
     User user;
@@ -27,7 +29,7 @@ class UserControllerTest {
     void createUsers() {
         inMemoryUserStorage = new InMemoryUserStorage();
         inMemoryFeedStorage = new InMemoryFeedStorage();
-        userService = new UserService(inMemoryUserStorage, inMemoryFeedStorage);
+        userService = new UserService(inMemoryUserStorage, inMemoryFeedStorage, inMemoryFilmStorage);
         userController = new UserController(userService);
 
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
