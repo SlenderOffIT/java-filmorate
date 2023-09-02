@@ -122,7 +122,7 @@ public class UserService {
 
     public List<Feed> getFeed(int userId) {
         User user = getUserId(userId);
-        if(user == null) {
+        if (user == null) {
             throw new UserNotFoundException("Пользователь не найден");
         }
         return feedStorage.getFeed(userId);
