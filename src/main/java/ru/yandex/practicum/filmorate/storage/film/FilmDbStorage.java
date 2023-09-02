@@ -92,6 +92,12 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
+        log.debug("Выполняем popularGenreYearSearch({}, {}, {})", genreId, year, limit);
+        return null;
+    }
+
+    @Override
     public Film findFilmById(int id) {
         log.debug("Выполняем findFilmById({}})", id);
         return jdbcTemplate.queryForObject(commonSQLPartForReading +
