@@ -15,17 +15,17 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@Slf4j  // Эта аннотация инициализирует объект log для логгирования
+@Slf4j
 @Primary
 @RequiredArgsConstructor
 @Repository
 public class FeedDbStorage implements FeedStorage {
-    public final static String FRIEND = "FRIEND";
-    public final static String LIKE = "LIKE";
-    public final static String REVIEW = "REVIEW";
-    public final static String REMOVE = "REMOVE";
-    public final static String ADD = "ADD";
-    public final static String UPDATE = "UPDATE";
+    public static final String FRIEND = "FRIEND";
+    public static final String LIKE = "LIKE";
+    public static final String REVIEW = "REVIEW";
+    public static final String REMOVE = "REMOVE";
+    public static final String ADD = "ADD";
+    public static final String UPDATE = "UPDATE";
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -45,7 +45,6 @@ public class FeedDbStorage implements FeedStorage {
         parameters.put("ENTITY_ID", entityId);
         jdbcInsert.execute(parameters);
     }
-
 
     @Override
     public List<Feed> getFeed(int id) {
