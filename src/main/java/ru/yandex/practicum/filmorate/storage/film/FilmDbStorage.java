@@ -94,7 +94,15 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
         log.debug("Выполняем popularGenreYearSearch({}, {}, {})", genreId, year, limit);
-        return null;
+
+        final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? AND d.id_genre = ? " +
+                "ORDER BY rate DESC " +
+                "LIMIT ?";
+        final String sql = commonSQLPartForReading + where;
+
+        return jdbcTemplate.query(sql, mapperGetFilms(), year, genreId, limit).stream()
+                .findFirst()
+                .orElse(Collections.emptyList());
     }
 
     @Override
