@@ -80,11 +80,6 @@ public class UserController {
 
     @GetMapping("/{id}/feed")
     public List<Feed> getFeed(@PathVariable int id) {
-        List<Feed> feeds = userService.getFeed(id);
-        if (feeds.size() > 9) {
-            feeds = feeds.subList(0, 9);
-        }
-        return feeds;
+        return userService.getFeed(id);
     }
-
 }
