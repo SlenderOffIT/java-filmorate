@@ -115,7 +115,7 @@ public class FilmController {
 
     @GetMapping("/common")
     public List<Film> getCommonFilms(@RequestParam("userId") Integer userId,
-                                  @RequestParam("friendId") Integer friendId) {
+                                     @RequestParam("friendId") Integer friendId) {
         log.debug("Поступил запрос на получение общих фильмов для пользователей {} и {}.",
                 userId, friendId);
         return filmService.getCommonFilms(userId, friendId);

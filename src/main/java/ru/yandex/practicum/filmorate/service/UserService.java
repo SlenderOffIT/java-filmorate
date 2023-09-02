@@ -6,8 +6,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.NotFound.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
+import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
@@ -27,12 +29,14 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
 public class UserService {
     UserStorage userStorage;
     FeedStorage feedStorage;
-
+    FilmStorage filmDbStorage;
 
     public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
-                       @Qualifier("feedDbStorage") FeedStorage feedStorage) {
+                       @Qualifier("feedDbStorage") FeedStorage feedStorage,
+                       FilmStorage filmDbStorage) {
         this.userStorage = userStorage;
         this.feedStorage = feedStorage;
+        this.filmDbStorage = filmDbStorage;
     }
 
     public List<User> getUsers() {
@@ -126,5 +130,15 @@ public class UserService {
             throw new UserNotFoundException("Пользователь не найден");
         }
         return feedStorage.getFeed(userId);
+    }
+
+    public List<Film> getRecommendedFilmsForUser(int userId) {
+        if (!userStorage.isExist(userId)) {
+            log.warn("Поступил запрос на получение рекомендуемых фильмов от несуществующего пользователя с id {}.",
+                    userId);
+            throw new UserNotFoundException(String.format("Пользователь с id %d не зарегистрирован.", userId));
+        }
+        log.debug("Выполняется получение списка рекомендуемых фильмов для пользователя с id = {}.", userId);
+        return filmDbStorage.getRecommendedFilmsForUser(userId);
     }
 }

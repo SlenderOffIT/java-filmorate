@@ -43,12 +43,12 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public List<Film> getSortedFilmsOfDirector(int directorId,
-                                               FilmSortingCriteria creteria) {
-        log.debug("Выполняем getSortedFilmsOfDirector({}, {})", directorId, creteria.name());
+                                               FilmSortingCriteria criteria) {
+        log.debug("Выполняем getSortedFilmsOfDirector({}, {})", directorId, criteria.name());
         String sql = commonSQLPartForReading +
                 "WHERE fd.director_id = ? " +
                 "GROUP BY f.id " +
-                creteria.getSqlPart();
+                criteria.getSqlPart();
 
         if (Boolean.FALSE.equals(jdbcTemplate.queryForObject(
                 "SELECT EXISTS (SELECT director_id FROM directors WHERE director_id = ?)",
@@ -81,9 +81,9 @@ public class FilmDbStorage implements FilmStorage {
 
         return isSearchByFilm && isSearchByDirector ?
                 jdbcTemplate.query(sql, mapperGetFilms(),
-                        wrapInPercent(query), wrapInPercent(query)).stream()
-                .findFirst()
-                .orElse(Collections.emptyList()) :
+                                wrapInPercent(query), wrapInPercent(query)).stream()
+                        .findFirst()
+                        .orElse(Collections.emptyList()) :
                 jdbcTemplate.query(sql, mapperGetFilms(),
                                 wrapInPercent(query)).stream()
                         .findFirst()
@@ -93,6 +93,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
         log.debug("Выполняем popularGenreYearSearch({}, {}, {})", genreId, year, limit);
+
         final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
 
         final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? AND id IN (" + subQuery + ") " +
@@ -106,12 +107,15 @@ public class FilmDbStorage implements FilmStorage {
                 .orElse(Collections.emptyList());
     }
 
+    public List<Film> getRecomendedForUser(int user_id) {
+        return null;
+    }
+
     @Override
     public List<Film> popularGenreSearch(int genreId, int limit) {
         log.debug("Выполняем popularGenreSearch({}, {})", genreId, limit);
 
         final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
-
         final String where = "WHERE id IN (" + subQuery + ") " +
                 "GROUP BY f.id, gf.id_genre, fd.director_id " +
                 "ORDER BY rate DESC " +
@@ -155,6 +159,35 @@ public class FilmDbStorage implements FilmStorage {
                 "ORDER BY f.rate DESC";
 
         return jdbcTemplate.query(sql, mapperGetFilms(), userId, friendId).stream()
+                .findFirst()
+                .orElse(Collections.emptyList());
+    }
+
+    public List<Film> getRecommendedFilmsForUser(int userId) {
+        String filmIdArray =
+                "SELECT id_film FROM like_film " +
+                        "WHERE id_user = ( " +
+                        "SELECT id_user FROM like_film " +
+                        "WHERE id_film IN ( " +
+                        "SELECT id_film FROM like_film " +
+                        "WHERE id_user = ? " +
+                        ") " +
+                        "AND id_user <> ? " +
+                        "GROUP BY id_user  " +
+                        "ORDER BY COUNT(id_user) DESC " +
+                        "LIMIT 1 " +
+                        ") " +
+                        "EXCEPT ( " +
+                        "SELECT id_film FROM like_film " +
+                        "WHERE id_user = ? " +
+                        ")";
+        String sql = commonSQLPartForReading +
+                "WHERE f.id IN (" + filmIdArray +
+                ")" +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY f.rate DESC";
+
+        return jdbcTemplate.query(sql, mapperGetFilms(), userId, userId, userId).stream()
                 .findFirst()
                 .orElse(Collections.emptyList());
     }
@@ -342,7 +375,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private String wrapInPercent(String str) {
-        return new String("%" + str + "%");
+        return "%" + str + "%";
     }
 }
 

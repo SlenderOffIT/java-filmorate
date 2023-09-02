@@ -105,6 +105,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getRecommendedFilmsForUser(int userId) {
+        return null;
+    }
+
     public boolean isExist(int id) {
         return getStorageFilm().containsKey(id);
     }

@@ -22,6 +22,8 @@ public interface FilmStorage {
 
     List<Film> getCommonFilms(Integer userId, Integer friendId);
 
+    List<Film> getRecommendedFilmsForUser(int userId);
+
     Film findFilmById(int id);
 
     Film save(Film film);
