@@ -22,6 +22,7 @@ import java.util.List;
  * отсортированного по годам/популярности.
  * /films/search/?query=str&by=title,director - получение списка фильмов по параметрам поиска
  * отсортированного по популярности.
+ * getCommonFilms - выводит список общих фильмов, отсортированных по популярности
  */
 @Slf4j
 @RestController
@@ -110,5 +111,13 @@ public class FilmController {
             throw new IncorrectParameterException("by");
         }
         return filmService.searchFilms(query, by);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam("userId") Integer userId,
+                                  @RequestParam("friendId") Integer friendId) {
+        log.debug("Поступил запрос на получение общих фильмов для пользователей {} и {}.",
+                userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
     }
 }

@@ -20,6 +20,8 @@ public interface FilmStorage {
 
     List<Film> popularYearSearch(int genreId, int year);
 
+    List<Film> getCommonFilms(Integer userId, Integer friendId);
+
     Film findFilmById(int id);
 
     Film save(Film film);
