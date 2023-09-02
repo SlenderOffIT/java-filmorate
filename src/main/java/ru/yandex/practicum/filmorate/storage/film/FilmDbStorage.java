@@ -106,6 +106,7 @@ public class FilmDbStorage implements FilmStorage {
                 .findFirst()
                 .orElse(Collections.emptyList());
     }
+
     @Override
     public List<Film> popularGenreSearch(int genreId, int limit) {
         log.debug("Выполняем popularGenreSearch({}, {})", genreId, limit);
