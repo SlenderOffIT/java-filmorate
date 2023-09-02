@@ -106,11 +106,6 @@ public class FilmDbStorage implements FilmStorage {
                 .findFirst()
                 .orElse(Collections.emptyList());
     }
-
-    public List<Film> getRecomendedForUser(int user_id) {
-        return null;
-    }
-
     @Override
     public List<Film> popularGenreSearch(int genreId, int limit) {
         log.debug("Выполняем popularGenreSearch({}, {})", genreId, limit);
