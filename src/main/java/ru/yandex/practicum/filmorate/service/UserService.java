@@ -5,11 +5,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.PathVariable;
 import ru.yandex.practicum.filmorate.exception.NotFound.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Feed;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
+import static ru.yandex.practicum.filmorate.storage.feed.FeedDbStorage.*;
 import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
@@ -23,9 +26,13 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
 @Service
 public class UserService {
     UserStorage userStorage;
+    FeedStorage feedStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage,
+                       @Qualifier("feedDbStorage") FeedStorage feedStorage) {
         this.userStorage = userStorage;
+        this.feedStorage = feedStorage;
     }
 
     public List<User> getUsers() {
@@ -82,6 +89,8 @@ public class UserService {
             throw new UserNotFoundException("Удалять не кого, такого пользователя не существует.");
         }
         userStorage.deleteFriends(id, friendId);
+        feedStorage.addFeed(id, FRIEND, REMOVE, friendId);  // Вот добавленная строка
+
     }
 
     public void addingFriends(int id, int friendId) {
@@ -94,6 +103,8 @@ public class UserService {
             throw new UserNotFoundException("Вы не можете добавить в друзья не существующего пользователя.");
         }
         userStorage.addingFriends(id, friendId);
+        feedStorage.addFeed(id, FRIEND, ADD, friendId);
+
     }
 
     public List<User> listFriends(@PathVariable int id) {
@@ -107,5 +118,13 @@ public class UserService {
         }
         log.info("Пользователь с id {} запросил список общих друзей с пользователем id {}.", id, otherId);
         return userStorage.listMutualFriends(id, otherId);
+    }
+
+    public List<Feed> getFeed(int userId) {
+        User user = getUserId(userId);
+        if (user == null) {
+            throw new UserNotFoundException("Пользователь не найден");
+        }
+        return feedStorage.getFeed(userId);
     }
 }

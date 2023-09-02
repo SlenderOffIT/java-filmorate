@@ -8,12 +8,15 @@ import ru.yandex.practicum.filmorate.exception.NotFound.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFound.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.NotFound.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.review.ReviewStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 import java.util.Optional;
+
+import static ru.yandex.practicum.filmorate.storage.feed.FeedDbStorage.*;
 
 /**
  * Класс ReviewService выполняет:
@@ -34,19 +37,25 @@ public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final UserStorage userStorage;
     private final FilmStorage filmStorage;
+    private final FeedStorage feedStorage;
+
 
     public ReviewService(@Qualifier("reviewDbStorage") ReviewStorage reviewStorage,
                          @Qualifier("userDbStorage") UserStorage userStorage,
-                         @Qualifier("filmDbStorage") FilmStorage filmStorage) {
+                         @Qualifier("filmDbStorage") FilmStorage filmStorage,
+                         @Qualifier("feedDbStorage") FeedStorage feedStorage) {
         this.reviewStorage = reviewStorage;
         this.userStorage = userStorage;
         this.filmStorage = filmStorage;
+        this.feedStorage = feedStorage;
     }
 
     public Review createReview(Review review) {
         log.debug("Обрабатываем запрос на создание отзыва к фильму c id {}", review.getFilmId());
         validateCreateReview(review);
-        return reviewStorage.create(review);
+        Review createdReview = reviewStorage.create(review);
+        feedStorage.addFeed(createdReview.getUserId(), REVIEW, ADD, createdReview.getReviewId()); // 3. Добавление вызова feedStorage.addFeed(...)
+        return createdReview;
     }
 
     public List<Review> getAllReviews(Integer filmId, Integer count) {
@@ -70,14 +79,17 @@ public class ReviewService {
 
     public Review updateReview(Review review) {
         validateReview(review.getReviewId());
-        log.debug("Обрабатываем запрос на обновление отзыва с id {}.", review.getReviewId());
+        Review existingReview = getReviewById(review.getReviewId());
+        feedStorage.addFeed(existingReview.getUserId(), REVIEW, UPDATE, existingReview.getReviewId());
         return reviewStorage.update(review);
     }
 
     public void deleteReviewById(Integer id) {
         log.debug("Обрабатываем запрос на удаление отзыва с id {}.", id);
         validateReview(id);
-        reviewStorage.deleteById(id);
+        Review review = getReviewById(id); // Получаем отзыв перед удалением
+        feedStorage.addFeed(review.getUserId(), REVIEW, REMOVE, id); // Добавляем событие в ленту
+        reviewStorage.deleteById(id); // Удаляем отзыв
     }
 
     public void setLike(Integer reviewId, Integer userId) {

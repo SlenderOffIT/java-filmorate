@@ -7,14 +7,19 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exception.NotFound.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
+import ru.yandex.practicum.filmorate.storage.feed.FeedStorage;
 
 import java.util.*;
+
+import static ru.yandex.practicum.filmorate.storage.feed.FeedDbStorage.REMOVE;
+import static ru.yandex.practicum.filmorate.storage.feed.FeedDbStorage.REVIEW;
 
 @Component
 @AllArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
 
     private final JdbcTemplate jdbcTemplate;
+    private final FeedStorage feedStorage;
 
     @Override
     public List<Review> getAll() {
@@ -71,7 +76,9 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public void deleteById(Integer reviewId) {
+        Review review = getById(reviewId);
         jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", reviewId);
+        feedStorage.addFeed(review.getUserId(), REVIEW, REMOVE, reviewId);
     }
 
     @Override
