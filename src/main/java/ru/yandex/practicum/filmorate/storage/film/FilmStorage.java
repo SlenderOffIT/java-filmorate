@@ -14,6 +14,12 @@ public interface FilmStorage {
 
     List<Film> searchFilms(String query, String by);
 
+    List<Film> popularGenreYearSearch(int genreId, int year, int limit);
+
+    List<Film> popularGenreSearch(int genreId, int limit);
+
+    List<Film> popularYearSearch(int genreId, int year);
+
     Film findFilmById(int id);
 
     Film save(Film film);

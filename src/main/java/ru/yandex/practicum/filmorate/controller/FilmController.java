@@ -44,9 +44,23 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> topFilms(@RequestParam(required = false, defaultValue = "10") int count) {
-        log.debug("Поступил запрос на просмотр топ {} фильмов.", count);
-        return filmService.topFilms(count);
+    public List<Film> topFilms(@RequestParam(defaultValue = "10") Integer count,
+                               @RequestParam(required = false) Integer genreId,
+                               @RequestParam(required = false) Integer year) {
+        if (genreId != null && year != null) {
+            log.debug("Поступил запрос на получение списка {} самых популярных фильмов за {} год с id жанра {}.",
+                    count, year, genreId);
+        } else if (genreId != null) {
+            log.debug("Поступил запрос на получение списка {} самых популярных фильмов с id жанра {}.",
+                    count, genreId);
+        } else if (year != null) {
+            log.debug("Поступил запрос на получение списка {} самых популярных фильмов за {} год.",
+                    count, year);
+        } else {
+            log.debug("Поступил запрос на просмотр топ {} фильмов.", count);
+        }
+
+        return filmService.topFilms(count, genreId, year);
     }
 
     @PostMapping

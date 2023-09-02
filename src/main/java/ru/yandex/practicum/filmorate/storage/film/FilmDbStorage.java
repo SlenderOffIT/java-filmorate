@@ -92,6 +92,58 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
+        log.debug("Выполняем popularGenreYearSearch({}, {}, {})", genreId, year, limit);
+
+        // Просто так собрать все сопутствующие жанры нам не получится, поэтому нужен подзапрос
+        final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
+
+        final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? AND id IN (" + subQuery + ") " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY rate DESC " +
+                "LIMIT ?";
+        final String sql = commonSQLPartForReading + where;
+
+        return jdbcTemplate.query(sql, mapperGetFilms(), year, genreId, limit).stream()
+                .findFirst()
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public List<Film> popularGenreSearch(int genreId, int limit) {
+        log.debug("Выполняем popularGenreSearch({}, {})", genreId, limit);
+
+        // Тут точно так же используем подзапрос, чтобы выбрать не только искомый жанр,
+        // но и все остальные, которые есть у фильма
+        final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
+
+        final String where = "WHERE id IN (" + subQuery + ") " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY rate DESC " +
+                "LIMIT ?";
+        final String sql = commonSQLPartForReading + where;
+
+        return jdbcTemplate.query(sql, mapperGetFilms(), genreId, limit).stream()
+                .findFirst()
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public List<Film> popularYearSearch(int year, int limit) {
+        log.debug("Выполняем popularYearSearch({}, {})", year, limit);
+
+        final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY f.rate " +
+                "LIMIT ?";
+        final String sql = commonSQLPartForReading + where;
+
+        return jdbcTemplate.query(sql, mapperGetFilms(), year, limit).stream()
+                .findFirst()
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
     public Film findFilmById(int id) {
         log.debug("Выполняем findFilmById({}})", id);
         return jdbcTemplate.queryForObject(commonSQLPartForReading +

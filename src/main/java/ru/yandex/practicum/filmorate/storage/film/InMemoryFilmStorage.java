@@ -41,6 +41,21 @@ public class InMemoryFilmStorage implements FilmStorage {
         return null;
     }
 
+    @Override
+    public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
+        return null;
+    }
+
+    @Override
+    public List<Film> popularGenreSearch(int genreId, int limit) {
+        return null;
+    }
+
+    @Override
+    public List<Film> popularYearSearch(int genreId, int year) {
+        return null;
+    }
+
     public Film findFilmById(int id) {
         return storageFilm.get(id);
     }
