@@ -28,7 +28,8 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
  * getSortedFilmsOfDirector - возвращает список фильмов режиссера с определенным id,
  * отсортированных по заданному критерию;
  * topFilms - выводит список топовых фильмов по лайкам.
- * searchFilms - ывводит список фильмов, отсортированных по популярности, по параметрам поиска
+ * searchFilms - выводит список фильмов, отсортированных по популярности, по параметрам поиска
+ * getCommonFilms - выводит список общих фильмов, отсортированных по популярности
  */
 @Slf4j
 @Service
@@ -40,10 +41,10 @@ public class FilmService {
 
     public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
                        @Qualifier("userDbStorage") UserStorage userStorage,
-                       @Qualifier("feedDbStorage") FeedStorage feedStorage) {  // Добавляем инициализацию в конструктор
+                       @Qualifier("feedDbStorage") FeedStorage feedStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
-        this.feedStorage = feedStorage;  // Инициализируем feedStorage
+        this.feedStorage = feedStorage;
     }
 
     public Collection<Film> getFilms() {
@@ -99,7 +100,7 @@ public class FilmService {
             throw new LikeAlreadyExistsException(String.format("Лайк от пользователя %d уже есть.", userId));
         }
         filmStorage.likeForFilm(id, userId);
-        feedStorage.addFeed(userId, LIKE, ADD, id);  // Добавляем событие в ленту
+        feedStorage.addFeed(userId, LIKE, ADD, id);
 
     }
 
@@ -117,7 +118,7 @@ public class FilmService {
             throw new LikeNotFoundException(String.format("Лайк от пользователя %d нету.", userId));
         }
         filmStorage.deleteLikeForFilm(id, userId);
-        feedStorage.addFeed(userId, LIKE, REMOVE, id);  // Добавляем событие об удалении лайка в ленту
+        feedStorage.addFeed(userId, LIKE, REMOVE, id);
 
     }
 
@@ -163,8 +164,22 @@ public class FilmService {
     }
 
     public List<Film> searchFilms(String query, String by) {
-        log.debug("Пользователь запросил список фильмов по поиску с параметрами: название {} и по {}.",
+        log.debug("Пользователь запросил список фильмов по поиску с параметрами: название {} по {}.",
                 query, by);
         return filmStorage.searchFilms(query, by);
+    }
+
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        log.debug("Пользователь запросил список общих фильмов для пользователей {} и {}.",
+                userId, friendId);
+        if (!userStorage.isExist(userId)) {
+            log.debug("Поступил запрос на получение общих фильмов от несуществующего пользователя с id {}.", userId);
+            throw new UserNotFoundException(String.format("Пользователь с id %d не зарегистрирован.", userId));
+        }
+        if (!userStorage.isExist(friendId)) {
+            log.debug("Поступил запрос на получение общих фильмов от несуществующего пользователя с id {}.", friendId);
+            throw new FilmNotFoundException(String.format("Фильм с id %d не не существует.", friendId));
+        }
+        return filmStorage.getCommonFilms(userId, friendId);
     }
 }

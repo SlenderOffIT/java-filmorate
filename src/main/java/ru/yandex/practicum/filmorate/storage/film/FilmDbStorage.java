@@ -31,7 +31,6 @@ public class FilmDbStorage implements FilmStorage {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-
     @Override
     public List<Film> getFilms() {
         log.debug("Выполняем getFilms()");
@@ -94,8 +93,6 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
         log.debug("Выполняем popularGenreYearSearch({}, {}, {})", genreId, year, limit);
-
-        // Просто так собрать все сопутствующие жанры нам не получится, поэтому нужен подзапрос
         final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
 
         final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? AND id IN (" + subQuery + ") " +
@@ -113,8 +110,6 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> popularGenreSearch(int genreId, int limit) {
         log.debug("Выполняем popularGenreSearch({}, {})", genreId, limit);
 
-        // Тут точно так же используем подзапрос, чтобы выбрать не только искомый жанр,
-        // но и все остальные, которые есть у фильма
         final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
 
         final String where = "WHERE id IN (" + subQuery + ") " +
@@ -139,6 +134,27 @@ public class FilmDbStorage implements FilmStorage {
         final String sql = commonSQLPartForReading + where;
 
         return jdbcTemplate.query(sql, mapperGetFilms(), year, limit).stream()
+                .findFirst()
+                .orElse(Collections.emptyList());
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        log.debug("Выполняем getCommonFilms({}, {})", userId, friendId);
+        String sql = "SELECT f.id, name, description, release_date, duration, mpa, COUNT(lf.id_user) AS rate, " +
+                "gf.id_genre, g.name_genre, fd.director_id, d.director_name " +
+                "FROM LIKE_FILM lf " +
+                "JOIN LIKE_FILM lf2 ON lf2.ID_USER = ? AND lf.ID_FILM = lf2.ID_FILM " +
+                "JOIN FILM f ON f.id = lf.ID_FILM " +
+                "LEFT JOIN genre_film AS gf ON f.id = gf.id_film " +
+                "LEFT JOIN genre AS g ON gf.id_genre = g.id_genre " +
+                "LEFT JOIN films_directors AS fd ON f.id = fd.film_id " +
+                "LEFT JOIN directors AS d ON d.director_id = fd.director_id " +
+                "WHERE lf.ID_USER = ? " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY f.rate DESC";
+
+        return jdbcTemplate.query(sql, mapperGetFilms(), userId, friendId).stream()
                 .findFirst()
                 .orElse(Collections.emptyList());
     }
