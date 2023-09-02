@@ -129,7 +129,25 @@ public class FilmService {
      * если переменная count заданна, то устанавливаем limit на данное значение
      * и собираем (collect) все элементы стрима в список.
      */
-    public List<Film> topFilms(Integer count) {
+    public List<Film> topFilms(Integer count, Integer genreId, Integer year) {
+        if (genreId != null && year != null) {
+            log.debug("Пользователь запросил список {} самых популярных фильмов за {} год с id жанра {}.",
+                    count, year, genreId);
+            return getPopularGenreYearFilms(genreId, year, count);
+        }
+
+        if (genreId != null) {
+            log.debug("Пользователь запросил список {} самых популярных фильмов с id жанра {}.",
+                    count, genreId);
+            return filmStorage.popularGenreSearch(genreId, count);
+        }
+
+        if (year != null) {
+            log.debug("Пользователь запросил список {} самых популярных фильмов за {} год.",
+                    count, year);
+            return filmStorage.popularYearSearch(year, count);
+        }
+
         log.debug("Пользователь запросил топ {} фильмов", count);
         return getFilms().stream()
                 .sorted(Comparator.comparingInt(Film::getRate).reversed())
