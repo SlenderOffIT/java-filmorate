@@ -95,7 +95,11 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
         log.debug("Выполняем popularGenreYearSearch({}, {}, {})", genreId, year, limit);
 
-        final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? AND d.id_genre = ? " +
+        // Просто так собрать все сопутствующие жанры нам не получится, поэтому нужен подзапрос
+        final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
+
+        final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? AND id IN (" + subQuery + ") " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
                 "ORDER BY rate DESC " +
                 "LIMIT ?";
         final String sql = commonSQLPartForReading + where;
@@ -109,7 +113,12 @@ public class FilmDbStorage implements FilmStorage {
     public List<Film> popularGenreSearch(int genreId, int limit) {
         log.debug("Выполняем popularGenreSearch({}, {})", genreId, limit);
 
-        final String where = "WHERE d.id_genre = ? " +
+        // Тут точно так же используем подзапрос, чтобы выбрать не только искомый жанр,
+        // но и все остальные, которые есть у фильма
+        final String subQuery = "SELECT id_film FROM genre_film AS gf WHERE gf.id_genre = ?";
+
+        final String where = "WHERE id IN (" + subQuery + ") " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
                 "ORDER BY rate DESC " +
                 "LIMIT ?";
         final String sql = commonSQLPartForReading + where;
@@ -124,7 +133,8 @@ public class FilmDbStorage implements FilmStorage {
         log.debug("Выполняем popularYearSearch({}, {})", year, limit);
 
         final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
-                "ORDER BY rate DESC " +
+                "GROUP BY f.id, gf.id_genre, fd.director_id " +
+                "ORDER BY f.rate " +
                 "LIMIT ?";
         final String sql = commonSQLPartForReading + where;
 
