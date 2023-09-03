@@ -129,7 +129,7 @@ public class FilmDbStorage implements FilmStorage {
 
         final String where = "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
                 "GROUP BY f.id, gf.id_genre, fd.director_id " +
-                "ORDER BY f.rate " +
+                "ORDER BY f.rate DESC " +
                 "LIMIT ?";
         final String sql = commonSQLPartForReading + where;
 

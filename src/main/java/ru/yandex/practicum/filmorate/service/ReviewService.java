@@ -54,7 +54,7 @@ public class ReviewService {
         log.debug("Обрабатываем запрос на создание отзыва к фильму c id {}", review.getFilmId());
         validateCreateReview(review);
         Review createdReview = reviewStorage.create(review);
-        feedStorage.addFeed(createdReview.getUserId(), REVIEW, ADD, createdReview.getReviewId()); // 3. Добавление вызова feedStorage.addFeed(...)
+        feedStorage.addFeed(createdReview.getUserId(), REVIEW, ADD, createdReview.getReviewId());
         return createdReview;
     }
 
@@ -73,8 +73,7 @@ public class ReviewService {
     public Review getReviewById(Integer id) {
         validateReview(id);
         log.debug("Обрабатываем запрос на получение отзыва с id {}.", id);
-        Review reviewById = reviewStorage.getById(id);
-        return reviewById;
+        return reviewStorage.getById(id);
     }
 
     public Review updateReview(Review review) {
@@ -87,34 +86,34 @@ public class ReviewService {
     public void deleteReviewById(Integer id) {
         log.debug("Обрабатываем запрос на удаление отзыва с id {}.", id);
         validateReview(id);
-        Review review = getReviewById(id); // Получаем отзыв перед удалением
-        feedStorage.addFeed(review.getUserId(), REVIEW, REMOVE, id); // Добавляем событие в ленту
-        reviewStorage.deleteById(id); // Удаляем отзыв
+        Review review = getReviewById(id);
+        feedStorage.addFeed(review.getUserId(), REVIEW, REMOVE, id);
+        reviewStorage.deleteById(id);
     }
 
     public void setLike(Integer reviewId, Integer userId) {
-        log.debug("Обрабатываем запрос от пользователя id {} поставить лайк отзыву id {}", userId, reviewId);
+        log.debug("Обрабатываем запрос от пользователя c id {} поставить лайк отзыву id {}", userId, reviewId);
         validateReview(reviewId);
         validateUser(userId);
         reviewStorage.addLike(reviewId, userId);
     }
 
     public void removeLike(Integer reviewId, Integer userId) {
-        log.debug("Обрабатываем запрос от пользователя id {} удалить лайк у отзыва id {}", userId, reviewId);
+        log.debug("Обрабатываем запрос от пользователя c id {} удалить лайк у отзыва id {}", userId, reviewId);
         validateReview(reviewId);
         validateUser(userId);
         reviewStorage.deleteLike(reviewId, userId);
     }
 
     public void setDislike(Integer reviewId, Integer userId) {
-        log.debug("Обрабатываем запрос от пользователя id {} поставить дизлайк отзыву id {}", userId, reviewId);
+        log.debug("Обрабатываем запрос от пользователя c id {} поставить дизлайк отзыву id {}", userId, reviewId);
         validateReview(reviewId);
         validateUser(userId);
         reviewStorage.addDislike(reviewId, userId);
     }
 
     public void removeDislike(Integer reviewId, Integer userId) {
-        log.debug("Обрабатываем запрос от пользователя id {} удалить дизлайк у отзыва id {}", userId, reviewId);
+        log.debug("Обрабатываем запрос от пользователя c id {} удалить дизлайк у отзыва id {}", userId, reviewId);
         validateReview(reviewId);
         validateUser(userId);
         reviewStorage.deleteDislike(reviewId, userId);

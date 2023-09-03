@@ -97,11 +97,12 @@ public class FilmService {
         }
         if (!filmStorage.isExistLike(id, userId)) {
             log.debug("Повторный лайк от пользователя с id {}.", userId);
-            throw new LikeAlreadyExistsException(String.format("Лайк от пользователя %d уже есть.", userId));
+//            throw new LikeAlreadyExistsException(String.format("Лайк от пользователя %d уже есть.", userId));
+            feedStorage.addFeed(userId, LIKE, ADD, id);
+            return;
         }
         filmStorage.likeForFilm(id, userId);
         feedStorage.addFeed(userId, LIKE, ADD, id);
-
     }
 
     public void deleteLikeForFilm(int id, int userId) {
@@ -119,7 +120,6 @@ public class FilmService {
         }
         filmStorage.deleteLikeForFilm(id, userId);
         feedStorage.addFeed(userId, LIKE, REMOVE, id);
-
     }
 
     /**

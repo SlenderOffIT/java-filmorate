@@ -41,7 +41,6 @@ public class ErrorHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundExceptions(final NotFoundException e) {
         e.printStackTrace();

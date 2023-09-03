@@ -93,25 +93,27 @@ public class UserService {
             throw new UserNotFoundException("Удалять не кого, такого пользователя не существует.");
         }
         userStorage.deleteFriends(id, friendId);
-        feedStorage.addFeed(id, FRIEND, REMOVE, friendId);  // Вот добавленная строка
-
+        feedStorage.addFeed(id, FRIEND, REMOVE, friendId);
     }
 
     public void addingFriends(int id, int friendId) {
-        if (!userStorage.getStorageUsers().containsKey(id) || id <= 0) {
+        if (!userStorage.isExist(id) || id <= 0) {
             log.debug("Пользователь с id {} не существует.", id);
             throw new UserNotFoundException("Данного пользователя не существует.");
         }
-        if (!userStorage.getStorageUsers().containsKey(friendId) || friendId <= 0) {
+        if (!userStorage.isExist(friendId) || friendId <= 0) {
             log.debug("Пользователь с id {} пытается добавить в друзья не существующего пользователя.", friendId);
             throw new UserNotFoundException("Вы не можете добавить в друзья не существующего пользователя.");
         }
         userStorage.addingFriends(id, friendId);
         feedStorage.addFeed(id, FRIEND, ADD, friendId);
-
     }
 
     public List<User> listFriends(@PathVariable int id) {
+        if (!userStorage.isExist(id) || id <= 0) {
+            log.debug("Пользователь с id {} не существует.", id);
+            throw new UserNotFoundException("Данного пользователя не существует.");
+        }
         return userStorage.listFriends(id);
     }
 
