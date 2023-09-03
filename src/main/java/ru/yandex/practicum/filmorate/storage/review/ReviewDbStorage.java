@@ -78,7 +78,6 @@ public class ReviewDbStorage implements ReviewStorage {
     public void deleteById(Integer reviewId) {
         Review review = getById(reviewId);
         jdbcTemplate.update("DELETE FROM reviews WHERE review_id = ?", reviewId);
-        feedStorage.addFeed(review.getUserId(), REVIEW, REMOVE, reviewId);
     }
 
     @Override
