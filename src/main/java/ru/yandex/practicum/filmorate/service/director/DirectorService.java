@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.service.director;
 
 import ru.yandex.practicum.filmorate.model.Director;
 
+import javax.validation.Valid;
 import java.util.List;
 
 public interface DirectorService {
@@ -10,9 +11,9 @@ public interface DirectorService {
 
     Director getDirectorById(int id);
 
-    Director saveDirector(Director director);
+    Director saveDirector(@Valid Director director);
 
-    Director updateDirector(Director director);
+    Director updateDirector(@Valid Director director);
 
     void deleteDirector(int id);
 }

@@ -24,7 +24,8 @@ public interface FilmService {
 
     List<Film> topFilms(Integer count, Integer genreId, Integer year);
 
-    List<Film> getSortedFilmsOfDirector(int directorId, FilmSortingCriteria criteria);
+    List<Film> getSortedFilmsOfDirector(int directorId,
+                                        FilmSortingCriteria criteria);
 
     List<Film> searchFilms(String query, String by);
 
