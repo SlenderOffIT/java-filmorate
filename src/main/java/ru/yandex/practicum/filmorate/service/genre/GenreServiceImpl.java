@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.genre;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -12,15 +12,17 @@ import java.util.List;
 @Slf4j
 @Service
 @AllArgsConstructor
-public class GenreService {
+public class GenreServiceImpl implements GenreService {
 
     GenreStorage genreStorage;
 
+    @Override
     public List<Genre> getAllGenres() {
         log.debug("Обрабатываем запрос на просмотр всех жанров фильмов.");
         return genreStorage.getAllGenres();
     }
 
+    @Override
     public Genre getGenreById(int id) {
         log.debug("Обрабатываем запрос на просмотр фильма с id {}.", id);
         if (genreStorage.isExist(id)) {

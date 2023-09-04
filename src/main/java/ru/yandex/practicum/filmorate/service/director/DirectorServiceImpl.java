@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.director;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,33 +16,38 @@ import java.util.List;
 @Service
 @AllArgsConstructor
 @Validated
-public class DirectorService {
+public class DirectorServiceImpl implements DirectorService {
 
     DirectorStorage directorStorage;
 
+    @Override
     public List<Director> getAllDirectors() {
         log.debug("Обрабатываем запрос на просмотр всех режиссеров.");
         return directorStorage.getAllDirectors();
     }
 
+    @Override
     public Director getDirectorById(int id) {
         throwsIfDoesNotExist(id);
         log.debug("Обрабатываем запрос на просмотр режиссера с id {}.", id);
         return directorStorage.getDirectorById(id);
     }
 
+    @Override
     public Director saveDirector(@Valid Director director) {
         throwsIfExists(director.getId());
         log.debug("Обрабатываем запрос на создание режиссера.");
         return directorStorage.saveDirector(director);
     }
 
+    @Override
     public Director updateDirector(@Valid Director director) {
         throwsIfDoesNotExist(director.getId());
         log.debug("Обрабатываем запрос на изменение режиссера с id {}.", director.getId());
         return directorStorage.updateDirector(director);
     }
 
+    @Override
     public void deleteDirector(int id) {
         throwsIfDoesNotExist(id);
         log.debug("Обрабатываем запрос на удаление режиссера с id {}.", id);

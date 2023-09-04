@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.service;
+package ru.yandex.practicum.filmorate.service.film;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static ru.yandex.practicum.filmorate.storage.feed.FeedDbStorage.*;
+import static ru.yandex.practicum.filmorate.util.FeedType.*;
 import static ru.yandex.practicum.filmorate.util.Validations.validation;
 
 /**
@@ -32,25 +32,27 @@ import static ru.yandex.practicum.filmorate.util.Validations.validation;
  */
 @Slf4j
 @Service
-public class FilmService {
+public class FilmServiceImpl implements FilmService {
 
     FilmStorage filmStorage;
     UserStorage userStorage;
     FeedStorage feedStorage;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage,
-                       @Qualifier("userDbStorage") UserStorage userStorage,
-                       @Qualifier("feedDbStorage") FeedStorage feedStorage) {
+    public FilmServiceImpl(@Qualifier("filmDbStorage") FilmStorage filmStorage,
+                           @Qualifier("userDbStorage") UserStorage userStorage,
+                           @Qualifier("feedDbStorage") FeedStorage feedStorage) {
         this.filmStorage = filmStorage;
         this.userStorage = userStorage;
         this.feedStorage = feedStorage;
     }
 
+    @Override
     public Collection<Film> getFilms() {
         log.debug("Поступил запрос на просмотр всех имеющихся фильмов.");
         return filmStorage.getFilms();
     }
 
+    @Override
     public Film findFilmById(int id) {
         log.debug("Поступил запрос на просмотр данных фильма с id {}", id);
         if (!filmStorage.isExist(id)) {
@@ -60,12 +62,14 @@ public class FilmService {
         return filmStorage.findFilmById(id);
     }
 
+    @Override
     public Film postFilm(Film film) {
         log.debug("Поступил запрос на добавление фильма с id {}", film.getId());
         validation(film);
         return filmStorage.save(film);
     }
 
+    @Override
     public Film update(Film film) {
         log.debug("Поступил запрос на изменение данных фильма с id {}", film.getId());
         if (!filmStorage.isExist(film.getId())) {
@@ -76,6 +80,7 @@ public class FilmService {
         return filmStorage.update(film);
     }
 
+    @Override
     public void delete(int id) {
         log.debug("Поступил запрос на удаление фильма с id {}", id);
         if (!filmStorage.isExist(id)) {
@@ -85,6 +90,7 @@ public class FilmService {
         filmStorage.delete(id);
     }
 
+    @Override
     public void likeForFilm(int id, int userId) {
         if (!userStorage.isExist(userId)) {
             log.debug("Поступил запрос на добавление лайка от несуществующего пользователя с id {}.", userId);
@@ -96,14 +102,14 @@ public class FilmService {
         }
         if (!filmStorage.isExistLike(id, userId)) {
             log.debug("Повторный лайк от пользователя с id {}.", userId);
-//            throw new LikeAlreadyExistsException(String.format("Лайк от пользователя %d уже есть.", userId));
-            feedStorage.addFeed(userId, LIKE, ADD, id);
+            feedStorage.addFeed(userId, LIKE.getValue(), ADD.getValue(), id);
             return;
         }
         filmStorage.likeForFilm(id, userId);
-        feedStorage.addFeed(userId, LIKE, ADD, id);
+        feedStorage.addFeed(userId, LIKE.getValue(), ADD.getValue(), id);
     }
 
+    @Override
     public void deleteLikeForFilm(int id, int userId) {
         if (!userStorage.isExist(userId)) {
             log.debug("Поступил запрос на удаление лайка от несуществующего пользователя с id {}", userId);
@@ -118,7 +124,7 @@ public class FilmService {
             throw new LikeNotFoundException(String.format("Лайк от пользователя %d нету.", userId));
         }
         filmStorage.deleteLikeForFilm(id, userId);
-        feedStorage.addFeed(userId, LIKE, REMOVE, id);
+        feedStorage.addFeed(userId, LIKE.getValue(), REMOVE.getValue(), id);
     }
 
     /**
@@ -129,6 +135,7 @@ public class FilmService {
      * если переменная count заданна, то устанавливаем limit на данное значение
      * и собираем (collect) все элементы стрима в список.
      */
+    @Override
     public List<Film> topFilms(Integer count, Integer genreId, Integer year) {
         if (genreId != null && year != null) {
             log.debug("Пользователь запросил список {} самых популярных фильмов за {} год с id жанра {}.",
@@ -155,6 +162,7 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
+    @Override
     public List<Film> getSortedFilmsOfDirector(int directorId,
                                                FilmSortingCriteria criteria) {
         log.debug("Пользователь запросил список фильмов режиссера с id = {}, отсортированных по критерию {}",
@@ -162,12 +170,14 @@ public class FilmService {
         return filmStorage.getSortedFilmsOfDirector(directorId, criteria);
     }
 
+    @Override
     public List<Film> searchFilms(String query, String by) {
         log.debug("Пользователь запросил список фильмов по поиску с параметрами: название {} по {}.",
                 query, by);
         return filmStorage.searchFilms(query, by);
     }
 
+    @Override
     public List<Film> getCommonFilms(Integer userId, Integer friendId) {
         log.debug("Пользователь запросил список общих фильмов для пользователей {} и {}.",
                 userId, friendId);

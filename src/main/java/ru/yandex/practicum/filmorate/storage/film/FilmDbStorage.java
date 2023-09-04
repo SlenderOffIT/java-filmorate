@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.film;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFound.DirectorNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -14,7 +14,7 @@ import java.util.*;
 
 import static ru.yandex.practicum.filmorate.storage.Mapping.*;
 
-@Component("filmDbStorage")
+@Repository
 @Slf4j
 public class FilmDbStorage implements FilmStorage {
     private final String commonSQLPartForReading = "SELECT f.id, name, description, release_date, duration, mpa, " +

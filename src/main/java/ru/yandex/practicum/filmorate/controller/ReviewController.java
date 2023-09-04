@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Review;
-import ru.yandex.practicum.filmorate.service.ReviewService;
+import ru.yandex.practicum.filmorate.service.review.ReviewServiceImpl;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -15,7 +15,7 @@ import java.util.Collection;
 @AllArgsConstructor
 public class ReviewController {
 
-    private ReviewService reviewService;
+    private ReviewServiceImpl reviewService;
 
     @PostMapping()
     public Review createReview(@Valid @RequestBody Review review) {

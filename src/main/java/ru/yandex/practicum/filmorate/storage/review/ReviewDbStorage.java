@@ -4,13 +4,13 @@ import lombok.AllArgsConstructor;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.exception.NotFound.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.*;
 
-@Component
+@Repository
 @AllArgsConstructor
 public class ReviewDbStorage implements ReviewStorage {
 

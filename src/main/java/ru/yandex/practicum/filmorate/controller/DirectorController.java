@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.model.Director;
-import ru.yandex.practicum.filmorate.service.DirectorService;
+import ru.yandex.practicum.filmorate.service.director.DirectorServiceImpl;
 
 import java.util.List;
 
@@ -20,7 +20,7 @@ import java.util.List;
 @RequestMapping("/directors")
 public class DirectorController {
 
-    DirectorService directorService;
+    DirectorServiceImpl directorService;
 
     @GetMapping
     public List<Director> getAllDirectors() {

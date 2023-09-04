@@ -3,7 +3,7 @@ package ru.yandex.practicum.filmorate.storage.user;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.sql.ResultSet;
@@ -12,7 +12,7 @@ import java.util.*;
 import static ru.yandex.practicum.filmorate.storage.Mapping.*;
 
 @Slf4j
-@Component
+@Repository
 public class UserDbStorage implements UserStorage {
 
     JdbcTemplate jdbcTemplate;

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmServiceImpl;
 import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.Collection;
@@ -30,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FilmController {
 
-    FilmService filmService;
+    FilmServiceImpl filmService;
 
     @GetMapping
     public Collection<Film> getFilms() {

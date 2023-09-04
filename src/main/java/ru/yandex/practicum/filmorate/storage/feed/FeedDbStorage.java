@@ -20,12 +20,15 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Repository
 public class FeedDbStorage implements FeedStorage {
-    public static final String FRIEND = "FRIEND";
-    public static final String LIKE = "LIKE";
-    public static final String REVIEW = "REVIEW";
-    public static final String REMOVE = "REMOVE";
-    public static final String ADD = "ADD";
-    public static final String UPDATE = "UPDATE";
+
+    private static final String FEED_TIMESTAMP = "FEED_TIMESTAMP";
+    private static final String FEED = "FEED";
+    private static final String EVENT_ID = "EVENT_ID";
+    private static final String USER_ID = "USER_ID";
+    private static final String EVENT_TYPE = "EVENT_TYPE";
+    private static final String OPERATION = "OPERATION";
+    private static final String ENTITY_ID = "ENTITY_ID";
+
     private final JdbcTemplate jdbcTemplate;
 
     @Override
@@ -35,14 +38,14 @@ public class FeedDbStorage implements FeedStorage {
             throw new IllegalArgumentException("Invalid input parameters for addFeed");
         }
         SimpleJdbcInsert jdbcInsert = new SimpleJdbcInsert(jdbcTemplate);
-        jdbcInsert.withTableName("FEED").usingGeneratedKeyColumns("EVENT_ID");
+        jdbcInsert.withTableName(FEED).usingGeneratedKeyColumns(EVENT_ID);
         Timestamp timestamp = new Timestamp(System.currentTimeMillis());
         Map<String, Object> parameters = new HashMap<>();
-        parameters.put("FEED_TIMESTAMP", timestamp);
-        parameters.put("USER_ID", userId);
-        parameters.put("EVENT_TYPE", eventType);
-        parameters.put("OPERATION", operation);
-        parameters.put("ENTITY_ID", entityId);
+        parameters.put(FEED_TIMESTAMP, timestamp);
+        parameters.put(USER_ID, userId);
+        parameters.put(EVENT_TYPE, eventType);
+        parameters.put(OPERATION, operation);
+        parameters.put(ENTITY_ID, entityId);
         jdbcInsert.execute(parameters);
     }
 
@@ -53,12 +56,12 @@ public class FeedDbStorage implements FeedStorage {
     }
 
     private Feed makeFeed(ResultSet resultSet, int rowNum) throws SQLException {
-        Timestamp timestamp = resultSet.getTimestamp("FEED_TIMESTAMP");
-        Integer userId = resultSet.getInt("USER_ID");
-        String eventType = resultSet.getString("EVENT_TYPE");
-        String operation = resultSet.getString("OPERATION");
-        Integer eventId = resultSet.getInt("EVENT_ID");
-        Integer entityId = resultSet.getInt("ENTITY_ID");
+        Timestamp timestamp = resultSet.getTimestamp(FEED_TIMESTAMP);
+        Integer userId = resultSet.getInt(USER_ID);
+        String eventType = resultSet.getString(EVENT_TYPE);
+        String operation = resultSet.getString(OPERATION);
+        Integer eventId = resultSet.getInt(EVENT_ID);
+        Integer entityId = resultSet.getInt(ENTITY_ID);
         return new Feed(timestamp.getTime(), userId, eventType, operation, eventId, entityId);
     }
 }
