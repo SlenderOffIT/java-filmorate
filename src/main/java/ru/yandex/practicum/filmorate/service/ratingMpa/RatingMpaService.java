@@ -7,5 +7,6 @@ import java.util.List;
 public interface RatingMpaService {
 
     List<RatingMpa> getAllRatingMpa();
+
     RatingMpa getRantingMpaById(int id);
 }
