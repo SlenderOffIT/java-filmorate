@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.RatingMpa;
-import ru.yandex.practicum.filmorate.service.RatingMpaService;
+import ru.yandex.practicum.filmorate.service.ratingMpa.RatingMpaServiceImpl;
 
 import java.util.List;
 
@@ -22,7 +22,7 @@ import java.util.List;
 @RequestMapping("/mpa")
 public class RatingMpaController {
 
-    RatingMpaService ratingMpaService;
+    RatingMpaServiceImpl ratingMpaService;
 
     @GetMapping
     public List<RatingMpa> getAllRatingMpa() {

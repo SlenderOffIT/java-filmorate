@@ -1,12 +1,28 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.List;
 import java.util.Map;
 
 public interface FilmStorage {
     List<Film> getFilms();
+
+    List<Film> getSortedFilmsOfDirector(int directorId,
+                                        FilmSortingCriteria creteria);
+
+    List<Film> searchFilms(String query, String by);
+
+    List<Film> popularGenreYearSearch(int genreId, int year, int limit);
+
+    List<Film> popularGenreSearch(int genreId, int limit);
+
+    List<Film> popularYearSearch(int genreId, int year);
+
+    List<Film> getCommonFilms(Integer userId, Integer friendId);
+
+    List<Film> getRecommendedFilmsForUser(int userId);
 
     Film findFilmById(int id);
 

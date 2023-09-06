@@ -3,11 +3,14 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.exception.IncorrectParameterException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.film.FilmServiceImpl;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
 import java.util.Collection;
 import java.util.List;
+
 
 /**
  * Контроллер фильмов:
@@ -15,6 +18,11 @@ import java.util.List;
  * /films/{id} - просмотр и удаление фильма;
  * /films/popular - просмотр топа фильмов, defaultValue = 10;
  * /films/{id}/like/{userId} - добавление и удаление лайков фильму.
+ * /films/director/{directorId}?sortBy=[year,likes] - получение списка фильмов конкретного режиссера,
+ * отсортированного по годам/популярности.
+ * /films/search/?query=str&by=title,director - получение списка фильмов по параметрам поиска
+ * отсортированного по популярности.
+ * getCommonFilms - выводит список общих фильмов, отсортированных по популярности
  */
 @Slf4j
 @RestController
@@ -22,7 +30,7 @@ import java.util.List;
 @AllArgsConstructor
 public class FilmController {
 
-    FilmService filmService;
+    FilmServiceImpl filmService;
 
     @GetMapping
     public Collection<Film> getFilms() {
@@ -37,9 +45,23 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public List<Film> topFilms(@RequestParam(required = false, defaultValue = "10") int count) {
-        log.debug("Поступил запрос на просмотр топ {} фильмов.", count);
-        return filmService.topFilms(count);
+    public List<Film> topFilms(@RequestParam(defaultValue = "10") Integer count,
+                               @RequestParam(required = false) Integer genreId,
+                               @RequestParam(required = false) Integer year) {
+        if (genreId != null && year != null) {
+            log.debug("Поступил запрос на получение списка {} самых популярных фильмов за {} год с id жанра {}.",
+                    count, year, genreId);
+        } else if (genreId != null) {
+            log.debug("Поступил запрос на получение списка {} самых популярных фильмов с id жанра {}.",
+                    count, genreId);
+        } else if (year != null) {
+            log.debug("Поступил запрос на получение списка {} самых популярных фильмов за {} год.",
+                    count, year);
+        } else {
+            log.debug("Поступил запрос на просмотр топ {} фильмов.", count);
+        }
+
+        return filmService.topFilms(count, genreId, year);
     }
 
     @PostMapping
@@ -70,5 +92,32 @@ public class FilmController {
     public void deleteLikeForFilm(@PathVariable int id, @PathVariable int userId) {
         log.debug("Поступил запрос на удаление лайка фильму с id {} от пользователя с id {}.", id, userId);
         filmService.deleteLikeForFilm(id, userId);
+    }
+
+    @GetMapping("/director/{directorId}")
+    public List<Film> getSortedFilmsOfDirector(@PathVariable int directorId,
+                                               @RequestParam("sortBy") FilmSortingCriteria criteria) {
+        log.debug("Поступил запрос на получение фильмов режиссера с id {} по критерию {}.",
+                directorId, criteria.name());
+        return filmService.getSortedFilmsOfDirector(directorId, criteria);
+    }
+
+    @GetMapping("/search")
+    public List<Film> searchFilms(@RequestParam("query") String query,
+                                  @RequestParam("by") String by) {
+        log.debug("Поступил запрос на получение списка фильмов по поиску с параметрами: название {} по {}.",
+                query, by);
+        if (!by.contains("title") && !by.contains("director")) {
+            throw new IncorrectParameterException("by");
+        }
+        return filmService.searchFilms(query, by);
+    }
+
+    @GetMapping("/common")
+    public List<Film> getCommonFilms(@RequestParam("userId") Integer userId,
+                                     @RequestParam("friendId") Integer friendId) {
+        log.debug("Поступил запрос на получение общих фильмов для пользователей {} и {}.",
+                userId, friendId);
+        return filmService.getCommonFilms(userId, friendId);
     }
 }

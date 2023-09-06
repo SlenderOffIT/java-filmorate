@@ -21,9 +21,9 @@ import java.util.*;
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    private int idUsers = 1;
     @Getter
     private final Map<Integer, User> storageUsers = new HashMap<>();
+    private int idUsers = 1;
     @Getter
     @Setter
     private Set<String> userEmail = new HashSet<>();
@@ -57,7 +57,7 @@ public class InMemoryUserStorage implements UserStorage {
         mutualFriendsId.retainAll(other.getListFriends());
 
         List<User> mutualFriends = new ArrayList<>();
-        for (Integer friends: mutualFriendsId) {
+        for (Integer friends : mutualFriendsId) {
             User outputUser = getStorageUsers().get(friends);
             mutualFriends.add(outputUser);
         }
@@ -106,7 +106,6 @@ public class InMemoryUserStorage implements UserStorage {
         friend.setListFriends(id);
         log.info("Пользователь с id {} добавил в друзья пользователя с id {}.", id, friendId);
     }
-
 
 
     public boolean isExist(int id) {

@@ -4,9 +4,12 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.util.FilmSortingCriteria.FilmSortingCriteria;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Данный класс InMemoryFilmStorage предназначен для хранения, добавления, обновления, удаления
@@ -20,12 +23,42 @@ import java.util.*;
 @Slf4j
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-    private int id = 1;
     @Getter
     private final Map<Integer, Film> storageFilm = new HashMap<>();
+    private int id = 1;
 
     public List<Film> getFilms() {
         return new ArrayList<>(storageFilm.values());
+    }
+
+    @Override
+    public List<Film> getSortedFilmsOfDirector(int directorId, FilmSortingCriteria creteria) {
+        return null;
+    }
+
+    @Override
+    public List<Film> searchFilms(String query, String by) {
+        return null;
+    }
+
+    @Override
+    public List<Film> popularGenreYearSearch(int genreId, int year, int limit) {
+        return null;
+    }
+
+    @Override
+    public List<Film> popularGenreSearch(int genreId, int limit) {
+        return null;
+    }
+
+    @Override
+    public List<Film> popularYearSearch(int genreId, int year) {
+        return null;
+    }
+
+    @Override
+    public List<Film> getCommonFilms(Integer userId, Integer friendId) {
+        return null;
     }
 
     public Film findFilmById(int id) {
@@ -72,6 +105,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         }
     }
 
+    @Override
+    public List<Film> getRecommendedFilmsForUser(int userId) {
+        return null;
+    }
+
     public boolean isExist(int id) {
         return getStorageFilm().containsKey(id);
     }
@@ -81,6 +119,4 @@ public class InMemoryFilmStorage implements FilmStorage {
         Film film = getStorageFilm().get(filmId);
         return film.getFilmLikes().contains(userId);
     }
-
-
 }

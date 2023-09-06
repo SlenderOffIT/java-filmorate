@@ -3,10 +3,12 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
+import ru.yandex.practicum.filmorate.model.Feed;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.user.UserServiceImpl;
 
-import java.util.*;
+import java.util.List;
 
 /**
  * Контроллер взаимодействия с пользователями:
@@ -21,7 +23,7 @@ import java.util.*;
 @RestController
 @RequestMapping("/users")
 public class UserController {
-    UserService userService;
+    UserServiceImpl userService;
 
     @GetMapping
     public List<User> getUsers() {
@@ -75,5 +77,16 @@ public class UserController {
     public void deleteFriends(@PathVariable int id, @PathVariable int friendId) {
         log.debug("Поступил запрос на удаление из друзей от пользователя с id {}, пользователя с id {}.", id, friendId);
         userService.deleteFriends(id, friendId);
+    }
+
+    @GetMapping("/{id}/feed")
+    public List<Feed> getFeed(@PathVariable int id) {
+        return userService.getFeed(id);
+    }
+
+    @GetMapping("/{id}/recommendations")
+    public List<Film> getRecommendedFilmsForUser(@PathVariable int id) {
+        log.debug("Пользователь с id {} запросил список рекомендуемых фильмов", id);
+        return userService.getRecommendedFilmsForUser(id);
     }
 }

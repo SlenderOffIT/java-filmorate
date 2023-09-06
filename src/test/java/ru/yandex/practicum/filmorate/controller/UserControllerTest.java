@@ -4,7 +4,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.exception.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.UserService;
+import ru.yandex.practicum.filmorate.service.user.UserServiceImpl;
+import ru.yandex.practicum.filmorate.storage.feed.InMemoryFeedStorage;
+import ru.yandex.practicum.filmorate.storage.film.InMemoryFilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.InMemoryUserStorage;
 
 import java.time.LocalDate;
@@ -15,7 +17,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class UserControllerTest {
 
     InMemoryUserStorage inMemoryUserStorage;
-    UserService userService;
+    InMemoryFeedStorage inMemoryFeedStorage;
+    InMemoryFilmStorage inMemoryFilmStorage;
+    UserServiceImpl userService;
     UserController userController;
     User user;
     User user1;
@@ -24,7 +28,8 @@ class UserControllerTest {
     @BeforeEach
     void createUsers() {
         inMemoryUserStorage = new InMemoryUserStorage();
-        userService = new UserService(inMemoryUserStorage);
+        inMemoryFeedStorage = new InMemoryFeedStorage();
+        userService = new UserServiceImpl(inMemoryUserStorage, inMemoryFeedStorage, inMemoryFilmStorage);
         userController = new UserController(userService);
 
         user = new User("asdfg@gmail.com", "Baobab", "Вася", LocalDate.of(1995, 12, 28));
